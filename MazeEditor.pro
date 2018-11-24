@@ -33,23 +33,24 @@ SOURCES += \
     setbasicinfo.cpp \
     formmgr.cpp \
     basejsonhelper.cpp \
-    globalfunc.cpp
+    globalfunc.cpp \
+    tipsdialog.cpp
 
 HEADERS += \
         mazeeditor.h \
     resexcel.h \
     mainctrl.h \
     msgcenter.h \
-    keys.h \
-    msgdata.h \
     setbasicinfo.h \
     formmgr.h \
     basejsonhelper.h \
-    globalfunc.h
+    globalfunc.h \
+    tipsdialog.h
 
 FORMS += \
         mazeeditor.ui \
-    setbasicinfo.ui
+    setbasicinfo.ui \
+    tipsdialog.ui
 
 QT += axcontainer
 

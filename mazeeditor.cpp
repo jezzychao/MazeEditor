@@ -1,6 +1,7 @@
 #include "mazeeditor.h"
 #include "ui_mazeeditor.h"
 #include "setbasicinfo.h"
+#include "formmgr.h"
 
 mazeeditor::mazeeditor(QWidget *parent) :
     QMainWindow(parent),
@@ -28,7 +29,5 @@ void mazeeditor::on_actionedit_triggered()
 
 void mazeeditor::on_actionnew_triggered()
 {
-    ui->txt_logInfo->setText("on_actionnew_triggered");
-    auto pdlg = new SetBasicInfo(this);
-    pdlg->show();
+    FormMgr::getInstance()->open("setbasicinfo");
 }
