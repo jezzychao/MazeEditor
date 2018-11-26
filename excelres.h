@@ -8,6 +8,12 @@
 #include <memory>
 #include <QMap>
 
+enum class EXCEL_FILES{
+    mazeStage,
+    mazeOption,
+    pot
+};
+
 enum class FIELD_TYPE{
     NON = 0,
     INT = 1,
@@ -47,22 +53,19 @@ class ExcelRes : public ExcelBase
 {
     typedef QMap<int,std::shared_ptr<ExcelData>>Container;
 public:
-    ExcelRes(const QString &);
+    ExcelRes();
 
-    ExcelRes(ExcelRes &) = delete;
+    ~ExcelRes() override = default;
 
-    ExcelRes &operator=(ExcelRes &) = delete;
+    bool openExcel(EXCEL_FILES);
 
-    ~ExcelRes() = default;
+    template <typename T>
+    bool saveExcel();
 
-     ///@brief 创建excel,初始化字段头
-    bool createExcel(const QVector<std::tuple<QString,FIELD_TYPE>> &);
+    template <typename T>
+    void loadExcel();
 
-    virtual bool saveExcel() = 0;
-
-    virtual void loadExcel() = 0;
-
-    bool exists() const;
+    void closeExcel();
 
     ExcelData& at(int id);
 
@@ -70,26 +73,11 @@ public:
 
     bool set(int id, ExcelData *);
 
-protected:
-   const QString &getPath() const{return filepath;}
-   Container &getContainer() {return m_map;}
-
  private:
-    QMap<QString, int> field2col;//字段所在的列号
+    ///@brief 初始化字段头
+   bool addFields(const QVector<std::tuple<QString,FIELD_TYPE>> &);
+
    Container m_map;
-   QString filepath;
-};
-
-class ExcelMazeOption: public ExcelRes
-{
-public:
-    ExcelMazeOption(const QString &);
-
-    ~ExcelMazeOption() override;
-
-     bool saveExcel() override;
-
-     void loadExcel() override;
 };
 
 #endif // EXCELRES_H

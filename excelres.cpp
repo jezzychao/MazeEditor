@@ -3,55 +3,73 @@
 #include <QFile>
 #include <QMessageBox>
 
-ExcelRes::ExcelRes(const QString &file)
-   :ExcelBase (nullptr),
-   filepath(myfunc::getExcelFilesPath() + "/" + file)
+ExcelRes::ExcelRes()
+    :ExcelBase ()
 {
 
 }
 
-bool ExcelRes::createExcel(const QVector<std::tuple<QString,FIELD_TYPE>> &fields )
+bool ExcelRes::openExcel(EXCEL_FILES file)
 {
-    if(exists()){
-        QMessageBox::information(nullptr, "警告","该excel文件已经存在，无法创建" );
-        return false;
+    QString name;
+    switch(file){
+    case EXCEL_FILES::mazeOption:name = "mazeOption"; break;
+    case EXCEL_FILES::pot: name = "pot";break;
+    case EXCEL_FILES::mazeStage: name = "mazeStage";break;
     }
-    if(create(filepath)){
-        setCurrentSheet(1);
-        for(auto it = fields.cbegin(); it != fields.cend();++it){
-            QString fieldname = std::get<0>(*it);
-            auto fieldtype = std::get<1>(*it);
-            QString qs;
-            switch (fieldtype) {
-                case FIELD_TYPE::NON: qs = "";break;
-                case FIELD_TYPE::INT:  qs = "INT";break;
-                case FIELD_TYPE::STR: qs = "STR";break;
-                case FIELD_TYPE::LIST: qs = "LIST";break;
-            }
-            QVariant qvar(qs);
-            auto col = it - fields.cbegin() + 1;
-            write(1, col, qvar);
-            write(2,col, QVariant("字段描述"));
-            write(3, col, QVariant(fieldname));
-            field2col.insert(fieldname, col);
+    QString fullPath = myfunc::getExcelFilesPath() + "/" + name + ".xlsx";
+    if(ExcelBase::open(fullPath)){
+        switch(file){
+        case EXCEL_FILES::mazeOption:
+            addFields({
+                          std::make_tuple("id",FIELD_TYPE::INT),
+                          std::make_tuple("text",FIELD_TYPE::STR),
+                          std::make_tuple("activecond",FIELD_TYPE::STR),
+                          std::make_tuple("disabledTips",FIELD_TYPE::STR),
+                          std::make_tuple("linkStageId",FIELD_TYPE::INT),
+                          std::make_tuple("events",FIELD_TYPE::LIST),
+                          std::make_tuple("isonlyonce",FIELD_TYPE::INT)
+                      });
+            break;
+        case EXCEL_FILES::pot:
+            break;
+        case EXCEL_FILES::mazeStage:
+            break;
         }
-        save();
-        return true;
     }
-    return false;
+    return true;
 }
 
- bool ExcelRes::exists() const
- {
-     QFile file(filepath);
-     return file.exists();
- }
+void ExcelRes::closeExcel(){
+    close();
+}
+
+bool ExcelRes::addFields(const QVector<std::tuple<QString,FIELD_TYPE>> &fields )
+{
+    for(auto it = fields.cbegin(); it != fields.cend();++it){
+        QString fieldname = std::get<0>(*it);
+        auto fieldtype = std::get<1>(*it);
+        QString qs;
+        switch (fieldtype) {
+        case FIELD_TYPE::NON: qs = "";break;
+        case FIELD_TYPE::INT:  qs = "INT";break;
+        case FIELD_TYPE::STR: qs = "STR";break;
+        case FIELD_TYPE::LIST: qs = "LIST";break;
+        }
+        QVariant qvar(qs);
+        auto col = it - fields.cbegin() + 1;
+        write(1, col, qvar);
+        write(2,col, QVariant("字段描述"));
+        write(3, col, QVariant(fieldname));
+    }
+    return true;
+}
 
 ExcelData& ExcelRes::at(int id)
 {
     auto it = m_map.find(id);
     if(it == m_map.end()){
-        qFatal("excel: %s 中不存在 id: %d 的数据",filepath.toStdString().c_str(), id);
+        qFatal("excel: %s 中不存在 id: %d 的数据",getFullPath().toStdString().c_str(), id);
     }
     return *(it.value());
 }
@@ -72,21 +90,23 @@ bool ExcelRes::set(int id, ExcelData *pdata)
     return true;
 }
 
-ExcelMazeOption::ExcelMazeOption(const QString &filename)
-    :ExcelRes (filename)
+template <typename T>
+bool ExcelRes::saveExcel()
 {
+    return false;
 }
 
-ExcelMazeOption::~ExcelMazeOption()
+template <typename T>
+void ExcelRes::loadExcel()
 {
 
 }
 
-bool ExcelMazeOption::saveExcel()
+template <>
+bool ExcelRes::saveExcel<MazeOption>()
 {
-    const auto &container = getContainer();
     int row = 3;
-    for(auto it = container.cbegin();it != container.cend();++it){
+    for(auto it = m_map.cbegin();it != m_map.cend();++it){
         ++row;
         auto base = it.value();
         auto &data = *base;
@@ -103,31 +123,31 @@ bool ExcelMazeOption::saveExcel()
     return true;
 }
 
-void ExcelMazeOption::loadExcel()
+template <>
+void ExcelRes::loadExcel<MazeOption>()
 {
-      setCurrentSheet(1);
-     auto &container = getContainer();
+    m_map.clear();
     QList<QList<QVariant>> cells;
-     readAll(cells);
-     for(auto it_row = cells.cbegin(); it_row != cells.cend();++it_row){
-         auto row = it_row - cells.cbegin() + 1;
-         if( row < 4){
-             continue;
-         }
-         for(auto it_col = it_row->cbegin(); it_col !=  it_row->cend();++it_col){
-                MazeOption option;
-                auto col = it_col -  it_row->cbegin() + 1;
-                switch (col) {
-                    case 1:  option.id = it_col->toInt() ; break;
-                    case 2:  option.text = it_col->toString() ; break;
-                    case 3:  option.activecond = it_col->toString() ; break;
-                    case 4:  option.disabledTips = it_col->toString() ; break;
-                    case 5:  option.linkStageId = it_col->toInt() ; break;
-                    case 6:  option.events = it_col->toStringList() ; break;
-                    case 7:  option.isonlyonce = it_col->toInt(); break;
-                }
-                container.insert(option.id, std::shared_ptr<ExcelData>(new MazeOption(option)));
-         }
-     }
+    readAll(cells);
+    for(auto it_row = cells.cbegin(); it_row != cells.cend();++it_row){
+        auto row = it_row - cells.cbegin() + 1;
+        if( row < 4){
+            continue;
+        }
+        MazeOption option;
+        for(auto it_col = it_row->cbegin(); it_col !=  it_row->cend();++it_col){
+            auto col = it_col -  it_row->cbegin() + 1;
+            switch (col) {
+            case 1:  option.id = it_col->toInt() ; break;
+            case 2:  option.text = it_col->toString() ; break;
+            case 3:  option.activecond = it_col->toString() ; break;
+            case 4:  option.disabledTips = it_col->toString() ; break;
+            case 5:  option.linkStageId = it_col->toInt() ; break;
+            case 6:  option.events = it_col->toStringList() ; break;
+            case 7:  option.isonlyonce = it_col->toInt(); break;
+            }
+        }
+        m_map.insert(option.id, std::shared_ptr<ExcelData>(new MazeOption(option)));
+    }
 }
 
