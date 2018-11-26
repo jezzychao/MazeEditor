@@ -27,25 +27,27 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mazeeditor.cpp \
-    resexcel.cpp \
     mainctrl.cpp \
     msgcenter.cpp \
     setbasicinfo.cpp \
     formmgr.cpp \
     basejsonhelper.cpp \
     globalfunc.cpp \
-    tipsdialog.cpp
+    tipsdialog.cpp\
+    excelres.cpp \
+    excelbase.cpp
 
 HEADERS += \
         mazeeditor.h \
-    resexcel.h \
     mainctrl.h \
     msgcenter.h \
     setbasicinfo.h \
     formmgr.h \
     basejsonhelper.h \
     globalfunc.h \
-    tipsdialog.h
+    tipsdialog.h\
+    excelres.h \
+    excelbase.h
 
 FORMS += \
         mazeeditor.ui \
