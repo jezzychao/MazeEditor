@@ -17,3 +17,19 @@ const QString &myfunc::getExcelFilesPath()
         }
         return s;
 }
+
+const QString &myfunc::getBackupExcelFilesPath()
+{
+        static  QString s;
+        if(s.isEmpty()){
+                s = qApp->applicationDirPath();
+                s.append("/data");
+                //E:\Workspace\HY2\荒野求生2\配置表\maze_editor\data
+        }
+        return s;
+}
+
+const int myfunc::getMazeStageId(int mazeId,int stageIdx)
+{
+    return
+}

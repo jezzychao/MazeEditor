@@ -3,16 +3,12 @@
 
 #include <QString>
 #include <QJsonObject>
-#include <QFile>
-#include <map>
-#include <unordered_map>
 #include <memory>
-#include <string>
-#include <tuple>
+#include <QMap>
 
 class BaseJSONHelper
 {
-  public:
+public:
     BaseJSONHelper(const QString &);
     BaseJSONHelper(const BaseJSONHelper &) = delete;
     BaseJSONHelper &operator=(const BaseJSONHelper &) = delete;
@@ -20,37 +16,73 @@ class BaseJSONHelper
     virtual bool load();
     virtual bool save();
 
-  protected:
+protected:
     virtual void read(const QJsonObject &) = 0;
     virtual void write(QJsonObject &) = 0;
     QString filename;
 };
 
-struct MazePotData
+///在编辑器中位置
+struct MazeStagePos
 {
-    MazePotData() = default;
-    MazePotData(int _id, const QString &_name, int _potId, const std::map<int, int> &_tickets);
-    int id;
-    QString name;               //迷宫的名称，用于区分不同的迷宫
-    int potId;                  //迷宫所在的pot点id
-    std::map<int, int> tickets; //进入迷宫所需的门票，没有就是空容器
+    MazeStagePos(int _x = 0,int _y = 0):x(_x),y(_y){}
+    int x;
+    int y;
 };
 
-class MazePotHelper : public BaseJSONHelper
-{
-  public:
-    MazePotHelper();
-    ~MazePotHelper() override = default;
-    std::tuple<bool, QString> setMazePot(const MazePotData &);
-    std::shared_ptr<MazePotData> getMazePot(int);
+///单个迷宫在编辑器中的配置数据
+struct MazeData{
+    ///@brief id
+    int id;
+    ///@brief 迷宫名称
+    QString name;
+    ///@brief 迷宫开始的stage id
+    int beginStageId;
+    ///@brief 进入迷宫所需要的门票
+    QMap<int,int> tickets;
+    ///@brief 迷宫的stage在编辑器中的显示位置
+    QMap<int, MazeStagePos> stages;
+};
 
-  protected:
+class SingleMaze
+{
+public:
+    SingleMaze(const MazeData &);
+
+    const MazeData &get()const{return *sp;}
+
+    bool setId(int);
+    bool setName(const QString &);
+    bool setBeginStageId(int );
+    bool setTickets(const QMap<int,int>& );
+
+    bool genStage(int,const  MazeStagePos &);
+    bool delStage(int);
+
+    ///@brief 若不存在，会创建；存在会修改
+    bool setStage(int, const MazeStagePos &);
+
+     ///@brief 自动生成Id
+    int genStageId() const;
+
+private:
+    std::shared_ptr<MazeData> sp;
+};
+
+class MazeHelper: public BaseJSONHelper
+{
+public:
+    static MazeHelper *getInstance();
+    ~MazeHelper() override ;
+
+protected:
     void read(const QJsonObject &) override;
     void write(QJsonObject &) override;
-
-  private:
-    std::tuple<bool, QString> checkIsValid(const MazePotData &);
-    std::unordered_map<int, std::shared_ptr<MazePotData>> data; //id 2 data
+private:
+    MazeHelper();
+    QMap<int, SingleMaze> datamap;
 };
+
+
 
 #endif // BASEJSONHELPER_H

@@ -6,13 +6,16 @@
 #include <ActiveQt/QAxObject>
 
 ExcelBase::ExcelBase()
-    :sp_excel(nullptr),sp_books(nullptr),sp_book(nullptr),sp_sheets(nullptr), sp_sheet(nullptr)
+    :sp_excel(nullptr),sp_books(nullptr),sp_book(nullptr),sp_sheets(nullptr), sp_sheet(nullptr),isAlreadyClose(false)
 {
 }
 
 ExcelBase::~ExcelBase()
 {
-    close();
+    if(!isAlreadyClose){
+        isAlreadyClose = true;
+         close();
+    }
 }
 
 bool ExcelBase::exists() const{
@@ -62,6 +65,25 @@ void ExcelBase::write(int row, int col, const QVariant &value)
             cell->dynamicCall("setValue(const QVariant&)", value);
             delete cell;
         }
+    }
+}
+
+void ExcelBase::write(int row, const QList<QVariant>&value)
+{
+    auto col = value.size();
+    QString endPos;
+    convertToColName(col, endPos);
+    endPos += QString::number(row);
+    QString beginPos("A"+QString::number(row));
+    QString rangStr = beginPos + ":" + endPos;
+    qDebug() << rangStr;
+    QAxObject *range = sp_sheet->querySubObject("Range(const QString&)", rangStr);
+    if (nullptr != range && !range->isNull())
+    {
+        QVariant var;
+        castListVariant2Variant(value,var);
+        range->setProperty("Value", var);
+         delete range;
     }
 }
 
@@ -174,12 +196,8 @@ bool ExcelBase::writeCurrentSheet(const QList<QList<QVariant>> &cells)
     delete range;
     return succ;
 }
-///
-/// \brief 把列数转换为excel的字母列号
-/// \param data 大于0的数
-/// \return 字母列号，如1->A 26->Z 27 AA
-///
-void ExcelBase::convertToColName(int data, QString &res)
+
+void convertToColName(int data, QString &res)
 {
     Q_ASSERT(data > 0 && data < 65535);
     int tempData = data / 26;
@@ -194,24 +212,31 @@ void ExcelBase::convertToColName(int data, QString &res)
         res = (to26AlphabetString(data) + res);
     }
 }
-///
-/// \brief 数字转换为26字母
-///
-/// 1->A 26->Z
-/// \param data
-/// \return
-///
-QString ExcelBase::to26AlphabetString(int data)
+
+QString to26AlphabetString(int data)
 {
     QChar ch = data + 0x40; //A对应0x41
     return QString(ch);
 }
-///
-/// \brief QList<QList<QVariant> >转换为QVariant
-/// \param cells
-/// \return
-///
-void ExcelBase::castListListVariant2Variant(const QList<QList<QVariant>> &cells, QVariant &res)
+
+void castListVariant2Variant(const QList<QVariant> &cells, QVariant &res)
+{
+    QVariantList vars;
+    for(auto it = cells.cbegin();it != cells.cend();++it){
+        vars.append(*it);
+    }
+    res = QVariant(std::move(vars));
+}
+
+void castVariant2ListVariant(const QVariant &var, QList<QVariant> &res)
+{
+    QVariantList vars = var.toList();
+    for(auto it = vars.cbegin();it != vars.cend();++it){
+        res.push_back(*it);
+    }
+}
+
+void castListListVariant2Variant(const QList<QList<QVariant>> &cells, QVariant &res)
 {
     QVariantList vars;
     const int rows = cells.size();
@@ -221,12 +246,8 @@ void ExcelBase::castListListVariant2Variant(const QList<QList<QVariant>> &cells,
     }
     res = QVariant(vars);
 }
-///
-/// \brief 把QVariant转为QList<QList<QVariant> >
-/// \param var
-/// \param res
-///
-void ExcelBase::castVariant2ListListVariant(const QVariant &var, QList<QList<QVariant>> &res)
+
+void castVariant2ListListVariant(const QVariant &var, QList<QList<QVariant>> &res)
 {
     QVariantList varRows = var.toList();
     if (varRows.isEmpty())

@@ -7,6 +7,10 @@ namespace  myfunc  {
     const QString &getRunPath();
 
     const QString &getExcelFilesPath();
+
+    const QString &getBackupExcelFilesPath();
+
+    const int getMazeStageId(int mazeId,int stageIdx);
 }
 
 

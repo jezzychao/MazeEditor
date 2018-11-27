@@ -5,6 +5,8 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
+#include <QString>
+#include <QMap>
 
 struct BaseMsg;
 
@@ -31,6 +33,8 @@ enum class MsgKeys
     Non,
     CloseTipsDlg,
     OpenTipsDlg,
+    OpenSetBasicInfo,
+    ConfirmModifyBasicInfo
 };
 
 std::string key2str(MsgKeys k);
@@ -55,6 +59,15 @@ struct MsgOpenTipsDlg : public BaseMsg
 struct MsgCloseTipsDlg : public BaseMsg
 {
     bool status;
+};
+
+struct MsgSetBasicInfo : public BaseMsg
+{
+    bool isEmpty;
+    int id;
+    QString name;               //迷宫的名称，用于区分不同的迷宫
+    int potId;                  //迷宫所在的pot点id
+    QMap<int, int> tickets; //进入迷宫所需的门票，没有就是空容器
 };
 
 template <typename T>

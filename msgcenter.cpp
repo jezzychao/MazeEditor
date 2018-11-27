@@ -1,19 +1,21 @@
 #include "msgcenter.h"
 #include <stdexcept>
 #include <QDebug>
+#include <QMap>
+
+namespace  {
+QMap<MsgKeys, QString> keystr{
+    {   MsgKeys::Non, "Non" },
+    {   MsgKeys::CloseTipsDlg, "CloseTipsDlg" },
+    {   MsgKeys::OpenTipsDlg, "OpenTipsDlg" },
+    {   MsgKeys::OpenSetBasicInfo, "OpenSetBasicInfo" },
+    {   MsgKeys::ConfirmModifyBasicInfo, "ConfirmModifyBasicInfo" }
+};
+}
 
 std::string key2str(MsgKeys k)
 {
-    switch (k)
-    {
-    case MsgKeys::Non:
-        return "Non";
-    case MsgKeys::CloseTipsDlg:
-        return "CloseTipsDlg";
-    case MsgKeys::OpenTipsDlg:
-        return "OpenTipsDlg";
-    }
-    return "error";
+    return keystr[k].toStdString();
 }
 
 template <typename T>

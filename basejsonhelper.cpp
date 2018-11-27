@@ -6,13 +6,9 @@
 #include <QtDebug>
 #include <QByteArray>
 #include <QTextStream>
+#include <QFile>
 
-MazePotData::MazePotData(int _id, const QString &_name, int _potId, const std::map<int, int> &_tickets)
-    : id(_id), name(_name), potId(_potId), tickets(_tickets)
-{
-}
 
-//#pragma region BaseJSONHelper
 
 BaseJSONHelper::BaseJSONHelper(const QString &file)
     : filename(file)
@@ -62,162 +58,198 @@ bool BaseJSONHelper::save()
     return true;
 }
 
-//#pragma endregion
+///---------------------------------------------------------------------------------------------------------------------------
 
-//#pragma region MazePotHelper
-
-MazePotHelper::MazePotHelper()
-    : BaseJSONHelper("maze_pot")
+SingleMaze::SingleMaze(const MazeData & data)
+    :sp(new MazeData(data))
 {
 }
 
-void MazePotHelper::read(const QJsonObject &json)
+bool SingleMaze::setId(int _id)
+{
+    bool ret = false;
+    if(sp){
+        sp->id = _id;
+        ret = true;
+    }
+    return ret;
+}
+
+bool SingleMaze::setName(const QString &_name)
+{
+    bool ret = false;
+    if(sp){
+        sp->name = _name;
+        ret = true;
+    }
+    return ret;
+}
+
+bool SingleMaze::setBeginStageId(int bid)
+{
+    bool ret = false;
+    if(sp){
+        sp->beginStageId = bid;
+        ret = true;
+    }
+    return ret;
+}
+bool SingleMaze::setTickets(const QMap<int,int>& _tickets)
+{
+    bool ret = false;
+    if(sp){
+        sp->tickets = _tickets;
+        ret = true;
+    }
+    return ret;
+}
+
+bool SingleMaze::genStage(int stageId,const  MazeStagePos &pos)
+{
+    if(sp){
+        auto it = sp->stages.find(stageId);
+        if(it != sp->stages.end()){
+            qWarning("已经存在该stageId: %d", stageId);
+            return false;
+        }
+        sp->stages.insert(stageId, pos );
+        return true;
+    }
+    return false;
+}
+
+bool SingleMaze::delStage(int stageId)
+{
+    if(sp){
+        auto it = sp->stages.find(stageId);
+        if(it != sp->stages.end()){
+            sp->stages.erase(it);
+        }
+        return true;
+    }
+    return false;
+}
+
+bool SingleMaze::setStage(int stageId, const MazeStagePos &pos)
+{
+    if(sp){
+        auto it = sp->stages.find(stageId);
+        if(it != sp->stages.end()){
+            sp->stages[stageId] = pos;
+        }else{
+            sp->stages.insert(stageId, pos );
+        }
+        return true;
+    }
+    return false;
+}
+
+int SingleMaze::genStageId() const
+{
+    int ret = -1;
+    if(!sp){
+        qWarning("没有加载数据，无法生成");
+        return ret;
+    }
+    if(sp->stages.size() == 0){
+        ret = sp->id + 1;
+    }else{
+        int maxId = 0;
+        auto keys = sp->stages.keys();
+        for(auto id : keys){
+            if(maxId < id){
+                maxId = id;
+            }
+        }
+        ret = ++maxId;
+    }
+    return ret;
+}
+
+///---------------------------------------------------------------------------------------------------------------------------
+
+MazeHelper::MazeHelper()
+    :BaseJSONHelper ("maze_data")
+{
+
+}
+
+MazeHelper::~MazeHelper()
+{
+
+}
+
+ MazeHelper *MazeHelper::getInstance()
+ {
+     static MazeHelper *p = new MazeHelper();
+     return p;
+ }
+
+void MazeHelper::read(const QJsonObject &json)
 {
     if (json.isEmpty())
     {
         return;
     }
-    decltype(data) copy;
-    auto slist = json.keys();
-    for (auto it = slist.begin(); it != slist.end(); ++it)
-    {
-        if (json[*it].isObject())
-        {
-            std::shared_ptr<MazePotData> sp(new MazePotData());
-            auto subJson = json[*it].toObject();
-            if (subJson.isEmpty())
-            {
-                continue;
-            }
-            if (subJson.contains("id"))
-            {
-                sp->id = subJson["id"].toInt();
-            }
-            if (subJson.contains("name") && subJson["name"].isString())
-            {
-                sp->name = subJson["name"].toString();
-            }
-            if (subJson.contains("potId"))
-            {
-                sp->potId = subJson["potId"].toInt();
-            }
-            if (subJson.contains("tickets") && subJson["tickets"].isObject())
-            {
-                auto ticketsObj = subJson["tickets"].toObject();
-                if (!ticketsObj.isEmpty())
-                {
-                    std::map<int, int> container;
-                    auto itemIds = ticketsObj.keys();
-                    for (auto it2 = itemIds.begin(); it2 != itemIds.end(); ++it2)
-                    {
-                        auto num = ticketsObj[*it2].toInt();
-                        if (num > 0)
-                        {
-                            container.insert({(*it2).toInt(), num});
-                        }
+    decltype (datamap) copy;
+    auto allMazeIds = json.keys();
+    for(auto mazeId : allMazeIds){
+        auto mazeJson =  json[mazeId].toObject();
+        if(!mazeJson.isEmpty()){
+            MazeData data;
+            data.name =  mazeJson["name"].toString();
+            data.id = mazeJson["id"].toInt();
+            data.beginStageId = mazeJson["beginStageId"].toInt();
+            auto ticketsJson = mazeJson["tickets"].toObject();
+            if(!ticketsJson.isEmpty()){
+                auto itemIds = ticketsJson.keys();
+                for(auto it = itemIds.cbegin();it != itemIds.cend();++it){
+                    auto num = ticketsJson[*it].toInt();
+                    if(num > 0){
+                        data.tickets.insert(it->toInt(),num);
                     }
-                    sp->tickets = container;
                 }
             }
-            copy.insert({sp->id, sp});
-        }
-    }
-    data = copy;
-}
-
-void MazePotHelper::write(QJsonObject &json)
-{
-    if (data.size() == 0)
-    {
-        return;
-    }
-    for (auto it = data.begin(); it != data.end(); ++it)
-    {
-        QJsonObject stage;
-        stage["id"] = it->second->id;
-        stage["name"] = it->second->name;
-        stage["potId"] = it->second->potId;
-
-        if (it->second->tickets.size() > 0)
-        {
-            QJsonObject tickets;
-            for (auto it2 = it->second->tickets.begin(); it2 != it->second->tickets.end(); ++it2)
-            {
-                if (it2->first != 0 && it2->second > 0)
-                {
-                    tickets[QString::number(it2->first, 10)] = it2->second;
+            auto stagesJson = mazeJson["stages"].toObject();
+            if(!stagesJson.isEmpty()){
+                auto stageIds = stagesJson.keys();
+                for(auto it = stageIds.cbegin();it != stageIds.cend();++it){
+                    auto posJson = stagesJson[*it].toObject();
+                    if(!posJson.isEmpty()){
+                        auto pos = MazeStagePos(posJson["x"].toInt(), posJson["y"].toInt());
+                        data.stages.insert(it->toInt(),pos);
+                    }
                 }
             }
-            stage["tickets"] = tickets;
+            copy.insert(data.id, SingleMaze(data));
         }
-        json[QString::number(it->first, 10)] = stage;
     }
+    datamap = copy;
 }
 
-std::tuple<bool, QString> MazePotHelper::setMazePot(const MazePotData &mazepot)
+void MazeHelper::write(QJsonObject &json)
 {
-    auto result = checkIsValid(mazepot);
-    if (!std::get<0>(result))
-    {
-        return result;
-    }
-    auto it = data.find(mazepot.id);
-    if (it != data.end())
-    {
-        auto &val = data.at(mazepot.id);
-        val.reset(new MazePotData(mazepot));
-    }
-    else
-    {
-        data.insert({mazepot.id, std::shared_ptr<MazePotData>(new MazePotData(mazepot))});
-    }
-    return result;
-}
+    for(auto itf = datamap.cbegin();itf != datamap.cend();++itf){
+        QJsonObject mazeJson ;
+        const auto &maze = itf.value().get();
+        mazeJson["id"] = maze.id;
+        mazeJson["name"] = maze.name;
+        mazeJson["beginStageId"] =maze.beginStageId;
+        QJsonObject tickets;
+        for(auto it =maze.tickets.cbegin();it != maze.tickets.cend();++it){
+            tickets[QString::number(it.key())] = it.value();
+        }
+        mazeJson["tickets"] = tickets;
 
-std::shared_ptr<MazePotData> MazePotHelper::getMazePot(int id)
-{
-    auto it = data.find(id);
-    if (it != data.end())
-    {
-        return it->second;
-    }
-    else
-    {
-        return nullptr;
+        QJsonObject stages;
+        for(auto it =maze.stages.cbegin();it != maze.stages.cend();++it){
+            QJsonObject pos;
+            pos["x"] = it.value().x;
+            pos["y"] = it.value().y;
+            stages[QString::number(it.key())] = pos;
+        }
+        mazeJson["stages"] = stages;
+
+        json[QString::number(maze.id)] = mazeJson;
     }
 }
-
-std::tuple<bool, QString> MazePotHelper::checkIsValid(const MazePotData &maze)
-{
-    bool result(true);
-    QString errormsg;
-    if (data.size() == 0)
-    {
-        if (data.find(maze.id) != data.end())
-        {
-            errormsg.append("迷宫id已经被使用：" + QString::number(maze.id) + "\n");
-            result = false;
-        }
-
-        for(auto it = data.begin(); it != data.end();++it){
-            if (it->second->name == maze.name)
-            {
-                errormsg.append("迷宫名称已经被使用：" + maze.name + "\n");
-                result = false;
-                break;
-            }
-        }
-
-        for(auto it = data.begin(); it != data.end();++it){
-            if (it->second->potId == maze.potId)
-            {
-                errormsg.append("该potId已经存在迷宫: " + QString::number( maze.potId));
-                result = false;
-                break;
-            }
-        }
-    }
-    return std::make_tuple(result, errormsg);
-}
-
-//#pragma endregion

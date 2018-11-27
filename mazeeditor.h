@@ -2,10 +2,13 @@
 #define MAZEEDITOR_H
 
 #include <QMainWindow>
+#include <memory>
 
 namespace Ui {
 class mazeeditor;
 }
+
+struct BaseMsg;
 
 class mazeeditor : public QMainWindow
 {
@@ -22,7 +25,11 @@ private slots:
 
     void on_actionnew_triggered();
 
+    void on_btn_basicInfo_clicked();
+
 private:
+    void acceptNotify(const std::string &, const BaseMsg &);
+
     Ui::mazeeditor *ui;
 };
 

@@ -11,7 +11,8 @@
 enum class EXCEL_FILES{
     mazeStage,
     mazeOption,
-    pot
+    pot,
+    item
 };
 
 enum class FIELD_TYPE{
@@ -49,6 +50,30 @@ struct MazeStage:public ExcelData
     QVector<int> optionIds;
 };
 
+struct Item:public ExcelData
+{
+    int id;
+    int type;
+    QString remark;
+};
+
+struct Pot:public ExcelData
+{
+    int id;
+    QString name;
+    QString desc;
+    int type;
+    int x;
+    int y;
+    QString icon;
+    QString icon1;
+    QStringList unlock;
+    int cond;
+    QStringList stage;
+    int target;
+    QStringList weight;
+};
+
 class ExcelRes : public ExcelBase
 {
     typedef QMap<int,std::shared_ptr<ExcelData>>Container;
@@ -57,12 +82,10 @@ public:
 
     ~ExcelRes() override = default;
 
-    bool openExcel(EXCEL_FILES);
+    bool openExcel(EXCEL_FILES,bool isBackup = false);
 
-    template <typename T>
     bool saveExcel();
 
-    template <typename T>
     void loadExcel();
 
     void closeExcel();
@@ -73,11 +96,57 @@ public:
 
     bool set(int id, ExcelData *);
 
- private:
+protected:
+    virtual bool initFields() = 0;
+    virtual  QList<QVariant> toExcel(const ExcelData &) = 0;
+    virtual  std::tuple<int,std::shared_ptr<ExcelData>> toObject(const QList<QVariant>&) = 0;
     ///@brief 初始化字段头
    bool addFields(const QVector<std::tuple<QString,FIELD_TYPE>> &);
 
+   Container &getContainer() {return m_map;}
+
+ private:
    Container m_map;
+};
+
+class ExMazeOption: public ExcelRes
+{
+public:
+    ExMazeOption() = default;
+    ~ExMazeOption() override  =default;
+protected:
+     bool initFields() override;
+      QList<QVariant> toExcel(const ExcelData &)override;
+      std::tuple<int,std::shared_ptr<ExcelData>> toObject(const QList<QVariant>&) override;
+};
+
+class ExItem: public ExcelRes
+{
+public:
+    ExItem() = default;
+    ~ExItem() override  =default;
+    QVector<Item> getValidTickets();
+protected:
+    bool initFields() override{
+        qFatal("不能对item.xlsx修改字段");
+    }
+     QList<QVariant> toExcel(const ExcelData &)override{
+        qFatal("不能对item.xlsx进行写入操作");
+     }
+      std::tuple<int,std::shared_ptr<ExcelData>> toObject(const QList<QVariant>&) override;
+};
+
+class ExPot: public ExcelRes
+{
+    public:
+    ExPot() = default;
+    ~ExPot() override  =default;
+protected:
+    bool initFields() override{
+        qFatal("不能对item.xlsx修改字段");
+    }
+     QList<QVariant> toExcel(const ExcelData &)override;
+      std::tuple<int,std::shared_ptr<ExcelData>> toObject(const QList<QVariant>&) override;
 };
 
 #endif // EXCELRES_H
