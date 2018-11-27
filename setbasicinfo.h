@@ -31,14 +31,16 @@ private slots:
     void on_btn_cancel_clicked();
 
 private:
-        void init(const BaseMsg &);
+        void initForNew();
+
+        void initForSet();
+
 
         void acceptNotify(const std::string &, const BaseMsg &);
 
 private:
     Ui::SetBasicInfo *ui;
-    std::shared_ptr<MsgSetBasicInfo> data;
-    std::shared_ptr<ExItem> sp_exitem;
+    bool isCreateNew;
 };
 
 #endif // SETBASICINFO_H

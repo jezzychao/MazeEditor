@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <memory>
 #include <QMap>
+#include <utility>
 
 class BaseJSONHelper
 {
@@ -36,6 +37,8 @@ struct MazeData{
     int id;
     ///@brief 迷宫名称
     QString name;
+    ///@brief 迷宫所在的怕potid
+    int potId;
     ///@brief 迷宫开始的stage id
     int beginStageId;
     ///@brief 进入迷宫所需要的门票
@@ -47,10 +50,15 @@ struct MazeData{
 class SingleMaze
 {
 public:
+    SingleMaze();
+
     SingleMaze(const MazeData &);
 
     const MazeData &get()const{return *sp;}
 
+    MazeData copy()const{return *sp;}
+
+    bool reset(MazeData *p = nullptr);
     bool setId(int);
     bool setName(const QString &);
     bool setBeginStageId(int );
@@ -62,7 +70,7 @@ public:
     ///@brief 若不存在，会创建；存在会修改
     bool setStage(int, const MazeStagePos &);
 
-     ///@brief 自动生成Id
+    ///@brief 自动生成Id
     int genStageId() const;
 
 private:
@@ -75,12 +83,27 @@ public:
     static MazeHelper *getInstance();
     ~MazeHelper() override ;
 
+    ///@brief 尝试创建一个迷宫数据
+    void create(const MazeData&);
+
+    ///@brief 检测mazeid,potid,name,是否有效
+    std::tuple<bool,QString> checkIsValid(const MazeData &);
+
+    ///@brief 检测mazeid,potid,name的修改,是否有效
+    std::tuple<bool,QString> modifyIsValid(int , const MazeData &);
+
+    SingleMaze &getCurrMaze();
+    bool setCurrMaze(int);
+    bool isAlreadyExist();
+    ///@brief 获取所有迷宫的简要信息：名称和id
+    QMap<int,QString> getBriefInfo() const;
 protected:
     void read(const QJsonObject &) override;
     void write(QJsonObject &) override;
 private:
     MazeHelper();
     QMap<int, SingleMaze> datamap;
+    int currId;
 };
 
 

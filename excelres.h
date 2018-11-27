@@ -82,7 +82,7 @@ public:
 
     ~ExcelRes() override = default;
 
-    bool openExcel(EXCEL_FILES,bool isBackup = false);
+    bool openExcel(EXCEL_FILES);
 
     bool saveExcel();
 

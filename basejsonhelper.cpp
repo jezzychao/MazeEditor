@@ -8,8 +8,6 @@
 #include <QTextStream>
 #include <QFile>
 
-
-
 BaseJSONHelper::BaseJSONHelper(const QString &file)
     : filename(file)
 {
@@ -58,11 +56,27 @@ bool BaseJSONHelper::save()
     return true;
 }
 
-///---------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------
+
+SingleMaze::SingleMaze()
+    :sp(nullptr)
+{
+
+}
 
 SingleMaze::SingleMaze(const MazeData & data)
     :sp(new MazeData(data))
 {
+}
+
+bool SingleMaze::reset(MazeData *p)
+{
+    if(p ==nullptr){
+        sp.reset();
+    }else{
+        sp.reset(p);
+    }
+    return true;
 }
 
 bool SingleMaze::setId(int _id)
@@ -169,7 +183,7 @@ int SingleMaze::genStageId() const
 ///---------------------------------------------------------------------------------------------------------------------------
 
 MazeHelper::MazeHelper()
-    :BaseJSONHelper ("maze_data")
+    :BaseJSONHelper ("maze_data"),currId(0)
 {
 
 }
@@ -179,11 +193,11 @@ MazeHelper::~MazeHelper()
 
 }
 
- MazeHelper *MazeHelper::getInstance()
- {
-     static MazeHelper *p = new MazeHelper();
-     return p;
- }
+MazeHelper *MazeHelper::getInstance()
+{
+    static MazeHelper *p = new MazeHelper();
+    return p;
+}
 
 void MazeHelper::read(const QJsonObject &json)
 {
@@ -197,6 +211,7 @@ void MazeHelper::read(const QJsonObject &json)
         auto mazeJson =  json[mazeId].toObject();
         if(!mazeJson.isEmpty()){
             MazeData data;
+            data.potId = mazeJson["potId"].toInt();
             data.name =  mazeJson["name"].toString();
             data.id = mazeJson["id"].toInt();
             data.beginStageId = mazeJson["beginStageId"].toInt();
@@ -234,6 +249,7 @@ void MazeHelper::write(QJsonObject &json)
         const auto &maze = itf.value().get();
         mazeJson["id"] = maze.id;
         mazeJson["name"] = maze.name;
+        mazeJson["potId"] = maze.potId;
         mazeJson["beginStageId"] =maze.beginStageId;
         QJsonObject tickets;
         for(auto it =maze.tickets.cbegin();it != maze.tickets.cend();++it){
@@ -252,4 +268,95 @@ void MazeHelper::write(QJsonObject &json)
 
         json[QString::number(maze.id)] = mazeJson;
     }
+}
+
+void MazeHelper::create(const MazeData&data)
+{
+    datamap.insert(data.id,SingleMaze(data));
+}
+
+SingleMaze &MazeHelper::getCurrMaze()
+{
+    if(currId == 0){
+        qFatal("当前没有打开的迷宫");
+    }
+    return datamap[currId];
+}
+
+bool MazeHelper::setCurrMaze(int id)
+{
+    if(id !=0){
+        if(datamap.find(id) == datamap.end()){
+            qWarning("迷宫数据中不存在id: %d 的迷宫！！！", id);
+            return false;
+        }
+    }
+    currId = id;
+    return true;
+}
+
+bool MazeHelper::isAlreadyExist()
+{
+    return currId != 0;
+}
+
+QMap<int,QString> MazeHelper::getBriefInfo() const{
+    QMap<int,QString> info;
+    for(auto it = datamap.cbegin();it != datamap.cend();++it){
+        info.insert(it.key(),it.value().get().name);
+    }
+    return info;
+}
+
+///@brief 检测mazeid,potid,name,是否有效
+std::tuple<bool,QString> MazeHelper::checkIsValid(const MazeData &data)
+{
+    bool result = true;
+    QString errmsg;
+    for(auto it = datamap.cbegin();it != datamap.cend();++it){
+        auto &maze = it.value().get();
+        if(maze.id == data.id){
+            result = false;
+            errmsg.append("该迷宫 id 已经存在了，请重新输入");
+            break;
+        }
+        if(maze.name == data.name){
+            result = false;
+            errmsg.append("该迷宫 name 已经存在了，请重新输入");
+            break;
+        }
+        if(maze.potId == data.potId){
+            result = false;
+            errmsg.append("该 potId 已经被其他的迷宫占用，请重新输入");
+            break;
+        }
+    }
+    return std::make_tuple(result,errmsg);
+}
+
+std::tuple<bool,QString> MazeHelper::modifyIsValid(int originalId, const MazeData &data){
+    bool result = true;
+    QString errmsg;
+    for(auto it = datamap.cbegin();it != datamap.cend();++it){
+        if(it.key() == originalId){
+            continue;
+        }
+        auto &maze = it.value().get();
+        if(maze.id == data.id){
+            result = false;
+            errmsg.append("该迷宫 id 已经存在了，请重新输入");
+            break;
+        }
+        if(maze.name == data.name){
+            result = false;
+            errmsg.append("该迷宫 name 已经存在了，请重新输入");
+            break;
+        }
+        if(maze.potId == data.potId){
+            result = false;
+            errmsg.append("该 potId 已经被其他的迷宫占用，请重新输入");
+            break;
+        }
+    }
+    return std::make_tuple(result,errmsg);
 }

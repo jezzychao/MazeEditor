@@ -18,9 +18,9 @@ ExcelRes::ExcelRes()
 
 }
 
-bool ExcelRes::openExcel(EXCEL_FILES file, bool isBackup)
+bool ExcelRes::openExcel(EXCEL_FILES file)
 {
-    QString relative = isBackup?  myfunc::getBackupExcelFilesPath(): myfunc::getExcelFilesPath();
+    QString relative = myfunc::getExcelFilesPath();
     QString fullPath = relative + "/" +  FileMap[file] + ".xlsx";
     if(ExcelBase::open(fullPath)){
         initFields();

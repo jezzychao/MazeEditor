@@ -35,7 +35,8 @@ SOURCES += \
     globalfunc.cpp \
     tipsdialog.cpp\
     excelres.cpp \
-    excelbase.cpp
+    excelbase.cpp \
+    dlgopenmaze.cpp
 
 HEADERS += \
         mazeeditor.h \
@@ -47,12 +48,14 @@ HEADERS += \
     globalfunc.h \
     tipsdialog.h\
     excelres.h \
-    excelbase.h
+    excelbase.h \
+    dlgopenmaze.h
 
 FORMS += \
         mazeeditor.ui \
     setbasicinfo.ui \
-    tipsdialog.ui
+    tipsdialog.ui \
+    dlgopenmaze.ui
 
 QT += axcontainer
 

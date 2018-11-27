@@ -2,6 +2,7 @@
 #include "mazeeditor.h"
 #include "setbasicinfo.h"
 #include "tipsdialog.h"
+#include "dlgopenmaze.h"
 #include <stdexcept>
 #include <utility>
 
@@ -72,6 +73,10 @@ std::shared_ptr<QWidget> createForm(const std::string &name)
     else if (name == "tipsdialog")
     {
         return std::shared_ptr<QWidget>(new TipsDialog());
+    }
+    else if (name == "dlgopenmaze")
+    {
+        return std::shared_ptr<QWidget>(new DlgOpenMaze());
     }
     return nullptr;
 }

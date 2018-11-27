@@ -33,8 +33,11 @@ enum class MsgKeys
     Non,
     CloseTipsDlg,
     OpenTipsDlg,
-    OpenSetBasicInfo,
-    ConfirmModifyBasicInfo
+    OpenSetBasicInfoForSet,
+    OpenSetBasicInfoForNew,
+    OpenNewMazeView,
+    ConfirmModifyBasicInfo,
+    ConfirmOpenMaze
 };
 
 std::string key2str(MsgKeys k);
