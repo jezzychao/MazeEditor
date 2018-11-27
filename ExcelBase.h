@@ -4,7 +4,7 @@
 #include <QAxObject>
 #include <QString>
 #include <QStringList>
-#include <QVariant>
+#include <QVariant> 
 
 class ExcelBase
 {
