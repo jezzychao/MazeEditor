@@ -38,7 +38,8 @@ SOURCES += \
     excelbase.cpp \
     dlgopenmaze.cpp \
     cusview.cpp \
-    cusstage.cpp
+    cusrect.cpp \
+    cusarrow.cpp
 
 HEADERS += \
         mazeeditor.h \
@@ -53,7 +54,8 @@ HEADERS += \
     excelbase.h \
     dlgopenmaze.h \
     cusview.h \
-    cusstage.h
+    cusrect.h \
+    cusarrow.h
 
 FORMS += \
         mazeeditor.ui \

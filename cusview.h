@@ -1,14 +1,14 @@
 #ifndef CUSVIEW_H
 #define CUSVIEW_H
 
-#include <QScrollArea>
+#include <QGraphicsView>
+#include <QGraphicsScene>
 #include <QMouseEvent>
 #include <QMenu>
 #include <QAction>
 #include <QContextMenuEvent>
 
-
-class CusView : public QScrollArea
+class CusView : public QGraphicsView
 {
     Q_OBJECT
 public:
@@ -44,6 +44,7 @@ private:
 
 
 private:
+    QGraphicsScene *m_pScene;
     QMenu *m_pMenu;
     QAction *m_pAddAct;
 };

@@ -17,7 +17,6 @@ mazeeditor::mazeeditor(QWidget *parent) :
 {
     MazeHelper::getInstance()->load();
     ui->setupUi(this);
-    ui->scrollArea->setBackgroundRole(QPalette::Dark);
     MsgCenter::getInstance()->attach(key2str(MsgKeys::ConfirmOpenMaze), [&](const std::string &key, const BaseMsg &msg) {
         this->acceptNotify(key,msg);
     });
@@ -48,18 +47,18 @@ void mazeeditor::acceptNotify(const std::string &key, const BaseMsg &msg)
     }
 }
 
-void mazeeditor::on_actionnew_triggered()
+void mazeeditor::on_btn_new_clicked()
 {
     FormMgr::getInstance()->open("setbasicinfo");
     MsgCenter::getInstance()->notify(key2str(MsgKeys::OpenSetBasicInfoForNew),MsgNull());
 }
 
-void mazeeditor::on_actionopen_triggered()
+void mazeeditor::on_btn_open_clicked()
 {
     FormMgr::getInstance()->open("dlgopenmaze");
 }
 
-void mazeeditor::on_btn_basicInfo_clicked()
+void mazeeditor::on_btn_set_clicked()
 {
     if(!isCanUseTopBtn()){
         QMessageBox::information(this, tr("信息"), tr("没有打开的迷宫"));
@@ -77,16 +76,13 @@ void mazeeditor::on_btn_save_clicked()
         qWarning("btn_save is invalid!!!");
        return;
     }
-
     MazeHelper::getInstance()->save();
 }
 
 void mazeeditor::clearView(){
-    ui->scrollArea->clearView();
+    ui->graphicsView->clearView();
 }
 
 void mazeeditor::initView(){
-     ui->scrollArea->initView();
+     ui->graphicsView->initView();
 }
-
-

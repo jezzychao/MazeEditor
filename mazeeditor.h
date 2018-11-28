@@ -19,14 +19,13 @@ public:
     ~mazeeditor();
 
 private slots:
-
-    void on_actionnew_triggered();
-
-    void on_btn_basicInfo_clicked();
-
-    void on_actionopen_triggered();
-
     void on_btn_save_clicked();
+
+    void on_btn_new_clicked();
+
+    void on_btn_open_clicked();
+
+    void on_btn_set_clicked();
 
 private:
     void acceptNotify(const std::string &, const BaseMsg &);
