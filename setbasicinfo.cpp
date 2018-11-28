@@ -52,6 +52,15 @@ void SetBasicInfo::initForNew()
         cb->addItems(qsl);
         cb->setCurrentIndex(0);
     }
+
+    ui->textEdit->setText("");
+    ui->textEdit_2->setText("");
+    ui->textEdit_3->setText("");
+    ui->textEdit_4->setText("");
+
+    ui->textEdit_id->setText("");
+    ui->textEdit_name->setText("");
+    ui->textEdit_potid->setText("");
 }
 
 void SetBasicInfo::initForSet()
@@ -63,10 +72,10 @@ void SetBasicInfo::initForSet()
         for(const auto &val: items){
             ++idx;
             if(val.id == itemId){
-                break;
+                return idx;
             }
         }
-        return idx;
+        return -1;
     };
     QStringList qsl({"none"});
     for(auto it = items.cbegin();it != items.cend();++it){
@@ -76,20 +85,23 @@ void SetBasicInfo::initForSet()
         s+= it->remark;
         qsl.append(s);
     }
+
     QVector<decltype (ui->comboBox)> comboxs{ ui->comboBox,ui->comboBox_2,ui->comboBox_3,ui->comboBox_4};
     for(auto cb : comboxs){
         cb->addItems(qsl);
     }
-
-    auto &maze = MazeHelper::getInstance()->getCurrMaze();
-    auto &mazeData = maze.get();
+    QVector<decltype (ui->textEdit)> textEdits{ ui->textEdit, ui->textEdit_2, ui->textEdit_3, ui->textEdit_4};
+    auto &mazeData = MazeHelper::getInstance()->getCurrMaze();
     auto keys = mazeData.tickets.keys();
     for(int index = 0;index !=4;++index){
         if(index < keys.size()){
-            auto idx = funcGetIdx(mazeData.tickets[keys[index]]);
+            auto itemId = keys.at(index);
+            auto idx = funcGetIdx(itemId) + 1;//因为第一位是none
             comboxs[index]->setCurrentIndex(idx == -1? 0 :idx);
+            textEdits[index]->setText(QString::number(mazeData.tickets[itemId]));
         }else{
             comboxs[index]->setCurrentIndex(0);
+            textEdits[index]->setText("");
         }
     }
 
@@ -162,11 +174,10 @@ void SetBasicInfo::on_btn_ok_clicked()
         }
     }
 
-
     MazeData maze;
     int originalId  = 0;
     if(!isCreateNew){
-        maze = MazeHelper::getInstance()->getCurrMaze().copy();
+        maze = MazeHelper::getInstance()->copyCurrMaze();
         originalId = maze.id;
     }
     maze.id = qsId.toInt();
@@ -187,7 +198,7 @@ void SetBasicInfo::on_btn_ok_clicked()
             pf(std::get<1>(result));
             return;
         }
-        MazeHelper::getInstance()->getCurrMaze().reset(new MazeData(maze));
+        MazeHelper::getInstance()->setCurrMaze(maze);
     }
     MazeHelper::getInstance()->save();
 

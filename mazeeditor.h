@@ -40,7 +40,4 @@ private:
     Ui::mazeeditor *ui;
 };
 
-///@brief 是否可以使用顶部的功能按钮
-bool isCanUseTopBtn();
-
 #endif // MAZEEDITOR_H

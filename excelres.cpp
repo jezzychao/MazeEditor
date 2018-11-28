@@ -121,7 +121,7 @@ bool ExMazeOption::initFields()
 
 QList<QVariant> ExMazeOption::toExcel(const ExcelData &data)
 {
-    auto &option = static_cast<const MazeOption&>(data);
+    auto &option = static_cast<const MazeOptionEx&>(data);
     QList<QVariant> list({
                              QVariant(option.id),
                              QVariant(option.text),
@@ -136,7 +136,7 @@ QList<QVariant> ExMazeOption::toExcel(const ExcelData &data)
 
 std::tuple<int,std::shared_ptr<ExcelData>> ExMazeOption::toObject(const QList<QVariant>&list)
 {
-    MazeOption option;
+    MazeOptionEx option;
     for(auto it = list.cbegin(); it !=  list.cend();++it){
         auto col = it -  list.cbegin() + 1;
         switch (col) {
@@ -149,7 +149,7 @@ std::tuple<int,std::shared_ptr<ExcelData>> ExMazeOption::toObject(const QList<QV
         case 7:  option.isonlyonce = it->toInt(); break;
         }
     }
-    return std::make_tuple(option.id, std::shared_ptr<ExcelData>(new MazeOption(option)));
+    return std::make_tuple(option.id, std::shared_ptr<ExcelData>(new MazeOptionEx(option)));
 }
 
 std::tuple<int,std::shared_ptr<ExcelData>> ExItem::toObject(const QList<QVariant>&list)

@@ -36,7 +36,9 @@ SOURCES += \
     tipsdialog.cpp\
     excelres.cpp \
     excelbase.cpp \
-    dlgopenmaze.cpp
+    dlgopenmaze.cpp \
+    cusview.cpp \
+    cusstage.cpp
 
 HEADERS += \
         mazeeditor.h \
@@ -49,7 +51,9 @@ HEADERS += \
     tipsdialog.h\
     excelres.h \
     excelbase.h \
-    dlgopenmaze.h
+    dlgopenmaze.h \
+    cusview.h \
+    cusstage.h
 
 FORMS += \
         mazeeditor.ui \

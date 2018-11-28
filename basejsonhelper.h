@@ -6,6 +6,8 @@
 #include <memory>
 #include <QMap>
 #include <utility>
+#include <QVector>
+#include <QPoint>
 
 class BaseJSONHelper
 {
@@ -21,6 +23,33 @@ protected:
     virtual void read(const QJsonObject &) = 0;
     virtual void write(QJsonObject &) = 0;
     QString filename;
+};
+
+struct MazeOption
+{
+        int id;
+        QString text;
+        QString activecond;
+        QString disabledTips;
+        int linkStageId;//如果是出口，该值为0
+        QVector<int> events;
+        bool isonlyonce;
+};
+
+struct MazeStage
+{
+    int id;
+    int type;
+    int mappingId;
+    QString name;
+    QString sprite;
+    QString desc;
+    int entryStoryId;
+
+    QMap<int,MazeOption> options;
+    QPoint pos;//stage在view中的位置
+    QVector<int> frontStageIds;//与该stage相连的前置stage
+    QVector<int> nextStageIds;//与该stage相连的后置stage
 };
 
 ///在编辑器中位置
@@ -43,38 +72,9 @@ struct MazeData{
     int beginStageId;
     ///@brief 进入迷宫所需要的门票
     QMap<int,int> tickets;
+
     ///@brief 迷宫的stage在编辑器中的显示位置
-    QMap<int, MazeStagePos> stages;
-};
-
-class SingleMaze
-{
-public:
-    SingleMaze();
-
-    SingleMaze(const MazeData &);
-
-    const MazeData &get()const{return *sp;}
-
-    MazeData copy()const{return *sp;}
-
-    bool reset(MazeData *p = nullptr);
-    bool setId(int);
-    bool setName(const QString &);
-    bool setBeginStageId(int );
-    bool setTickets(const QMap<int,int>& );
-
-    bool genStage(int,const  MazeStagePos &);
-    bool delStage(int);
-
-    ///@brief 若不存在，会创建；存在会修改
-    bool setStage(int, const MazeStagePos &);
-
-    ///@brief 自动生成Id
-    int genStageId() const;
-
-private:
-    std::shared_ptr<MazeData> sp;
+    QMap<int, MazeStage> stages;
 };
 
 class MazeHelper: public BaseJSONHelper
@@ -92,7 +92,10 @@ public:
     ///@brief 检测mazeid,potid,name的修改,是否有效
     std::tuple<bool,QString> modifyIsValid(int , const MazeData &);
 
-    SingleMaze &getCurrMaze();
+    MazeData copyCurrMaze()const ;
+
+    const MazeData &getCurrMaze()const;
+    bool setCurrMaze(const MazeData &);
     bool setCurrMaze(int);
     bool isAlreadyExist();
     ///@brief 获取所有迷宫的简要信息：名称和id
@@ -100,9 +103,20 @@ public:
 protected:
     void read(const QJsonObject &) override;
     void write(QJsonObject &) override;
+
+    void readStage(MazeStage &,const QJsonObject &) const ;
+    void writeStage(const MazeStage &,QJsonObject &)    ;
+
+    void readOption(MazeOption &,const QJsonObject &)const;
+    void writeOption(const MazeOption &,QJsonObject &);
+
 private:
     MazeHelper();
-    QMap<int, SingleMaze> datamap;
+
+    ///@brief 生成最大的stageid
+    int genNewStageId(int) const;
+
+    QMap<int, std::shared_ptr<MazeData>> m_maze;
     int currId;
 };
 

@@ -4,6 +4,7 @@
 #include "formmgr.h"
 #include "msgcenter.h"
 #include "basejsonhelper.h"
+#include <QMessageBox>
 
 bool isCanUseTopBtn()
 {
@@ -39,11 +40,10 @@ void mazeeditor::acceptNotify(const std::string &key, const BaseMsg &msg)
     }else if(key == key2str(MsgKeys::ConfirmModifyBasicInfo)){
         auto &newMsg = static_cast<const MsgCloseTipsDlg &>(msg);
         if(newMsg.status){
-            qWarning("重置视图界面");
             clearView();
             initView();
         }else{
-            qWarning("不需要操作视图界面");
+            qWarning("no operation");
         }
     }
 }
@@ -62,7 +62,8 @@ void mazeeditor::on_actionopen_triggered()
 void mazeeditor::on_btn_basicInfo_clicked()
 {
     if(!isCanUseTopBtn()){
-        qWarning("配置按钮无效");
+        QMessageBox::information(this, tr("信息"), tr("没有打开的迷宫"));
+        qWarning("btn_basicInfo is invalid!!!");
        return;
     }
     FormMgr::getInstance()->open("setbasicinfo");
@@ -72,20 +73,20 @@ void mazeeditor::on_btn_basicInfo_clicked()
 void mazeeditor::on_btn_save_clicked()
 {
     if(!isCanUseTopBtn()){
-        qWarning("保存按钮无效");
+         QMessageBox::information(this, tr("信息"), tr("没有打开的迷宫"));
+        qWarning("btn_save is invalid!!!");
        return;
     }
-    qWarning("保存迷宫数据");
+
     MazeHelper::getInstance()->save();
 }
 
 void mazeeditor::clearView(){
-    qWarning("清空显示");
+    ui->scrollArea->clearView();
 }
 
 void mazeeditor::initView(){
-    auto &maze = MazeHelper::getInstance()->getCurrMaze();
-    qWarning("显示迷宫：%s",maze.get().name.toStdString().c_str());
+     ui->scrollArea->initView();
 }
 
 

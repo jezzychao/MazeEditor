@@ -27,7 +27,7 @@ struct ExcelData
 
 };
 
-struct MazeOption:public ExcelData
+struct MazeOptionEx:public ExcelData
 {
     int id;                                 //id
     int linkStageId;                //链接的stageId
@@ -38,7 +38,7 @@ struct MazeOption:public ExcelData
     QStringList events;       //选项会抛出的事件列表
 };
 
-struct MazeStage:public ExcelData
+struct MazeStageEx:public ExcelData
 {
     int id;
     int type;
