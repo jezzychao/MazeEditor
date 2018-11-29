@@ -93,7 +93,7 @@ void MazeHelper::read(const QJsonObject &json)
             data.name =  mazeJson["name"].toString();
             data.id = mazeJson["id"].toInt();
             data.beginStageId = mazeJson["beginStageId"].toInt();
-             data.beginStageId = mazeJson["endStageId"].toInt();
+            data.endStageId = mazeJson["endStageId"].toInt();
             auto ticketsJson = mazeJson["tickets"].toObject();
             if(!ticketsJson.isEmpty()){
                 auto itemIds = ticketsJson.keys();
@@ -168,6 +168,7 @@ void MazeHelper::readStage(MazeStage &stage,const QJsonObject &json) const
     stage.sprite = json["sprite"].toString();
     stage.desc = json["desc"].toString();
     stage.entryStoryId = json["entryStoryId"].toInt();
+    stage.remark = json["remark"].toString();
 
     QMap<int,MazeOption> temp;
     auto allOpJson = json["options"].toObject();
@@ -193,15 +194,15 @@ void MazeHelper::readStage(MazeStage &stage,const QJsonObject &json) const
     {
         tempfronts.push_back(v.toInt());
     }
-   stage.frontStageIds = tempfronts;
+    stage.frontStageIds = tempfronts;
 
-   decltype (stage.nextStageIds) tempnexts;
-   auto nexts = json["nextStageIds"].toArray();
-   for(auto v : nexts)
-   {
-       tempnexts.push_back(v.toInt());
-   }
-  stage.nextStageIds = tempnexts;
+    decltype (stage.nextStageIds) tempnexts;
+    auto nexts = json["nextStageIds"].toArray();
+    for(auto v : nexts)
+    {
+        tempnexts.push_back(v.toInt());
+    }
+    stage.nextStageIds = tempnexts;
 }
 
 void MazeHelper::writeStage(const MazeStage &stage,QJsonObject &json)
@@ -213,6 +214,7 @@ void MazeHelper::writeStage(const MazeStage &stage,QJsonObject &json)
     json["sprite"] = stage.sprite;
     json["desc"] = stage.desc;
     json["entryStoryId"] = stage.entryStoryId;
+    json["remark"] = stage.remark;
 
     QJsonObject subJson;
     for(const auto &v: stage.options){
@@ -225,19 +227,19 @@ void MazeHelper::writeStage(const MazeStage &stage,QJsonObject &json)
     json["options"] = subJson;
 
     json["x"] = stage.pos.x();
-     json["y"] = stage.pos.y();
+    json["y"] = stage.pos.y();
 
-     QJsonArray arr;
-     for(auto v: stage.frontStageIds){
-         arr.append(v);
-     }
-      json["frontStageIds"]  = arr;
+    QJsonArray arr;
+    for(auto v: stage.frontStageIds){
+        arr.append(v);
+    }
+    json["frontStageIds"]  = arr;
 
-      QJsonArray arr2;
-      for(auto v: stage.nextStageIds){
-          arr2.append(v);
-      }
-       json["nextStageIds"]  = arr2;
+    QJsonArray arr2;
+    for(auto v: stage.nextStageIds){
+        arr2.append(v);
+    }
+    json["nextStageIds"]  = arr2;
 }
 
 void MazeHelper::readOption(MazeOption &option,const QJsonObject &json)const
@@ -251,6 +253,7 @@ void MazeHelper::readOption(MazeOption &option,const QJsonObject &json)const
     option.disabledTips = json["disabledTips"].toString();
     option.linkStageId = json["linkStageId"].toInt();
     option.isonlyonce = json["isonlyonce"].toInt();
+    option.remark = json["remark"].toString();
 
     decltype (option.events) temp;
     auto jsarr = json["events"].toArray();
@@ -268,6 +271,7 @@ void MazeHelper::writeOption(const MazeOption &option,QJsonObject &json)
     json["disabledTips"] = option.disabledTips;
     json["linkStageId"] = option.linkStageId;
     json["isonlyonce"] = option.isonlyonce;
+    json["remark"] = option.remark;
 
     QJsonArray arr;
     for(auto v :option.events){
@@ -294,15 +298,15 @@ const MazeData &MazeHelper::getCurrMaze() const
     return *(m_maze[currId]);
 }
 
- bool MazeHelper::setCurrMaze(const MazeData &maze)
- {
-     if(m_maze.find(maze.id) == m_maze.end()){
-         m_maze.insert(maze.id, std::make_shared<MazeData>(maze));
-     }else{
-         m_maze[maze.id].reset(new MazeData(maze));
-     }
-     return true;
- }
+bool MazeHelper::setCurrMaze(const MazeData &maze)
+{
+    if(m_maze.find(maze.id) == m_maze.end()){
+        m_maze.insert(maze.id, std::make_shared<MazeData>(maze));
+    }else{
+        m_maze[maze.id].reset(new MazeData(maze));
+    }
+    return true;
+}
 
 bool MazeHelper::setCurrMaze(int id)
 {
@@ -403,24 +407,121 @@ int MazeHelper::genNewStageId() const
     }
 }
 
-void MazeHelper::setStage( MazeStage&stage)
+void MazeHelper::setStage(MazeStage &stage)
 {
-    auto maze = copyCurrMaze();
-    auto it = maze.stages.find(stage.id);
-    if(it != maze.stages.end()){
-        maze.stages[stage.id] = stage;
-    }else{
-        maze.stages.insert(stage.id, stage);
+    //1.先断开原先的stage关联后置id，2.重新连接新的后置id，3.对原先的stage其他字段赋值
+    //同时对该stage的nextStageIds和后置stage的frontStageIds进行了操作
+    auto &curMaze = m_maze[currId];
+    bool isExisted = curMaze->stages.find(stage.id) != curMaze->stages.end();
+
+    //step.1
+    if(isExisted){
+        auto &originStage = curMaze->stages[stage.id];
+        for(auto nextId: originStage.nextStageIds){
+            auto &frontIds = curMaze->stages[nextId].frontStageIds;
+            for(auto frontId: frontIds){
+                if(frontId == originStage.id){
+                    frontIds.removeOne(frontId);
+                    break;
+                }
+            }
+        }
     }
-    setCurrMaze(maze);
+
+    //step.2
+    for(auto nextId: stage.nextStageIds){
+        curMaze->stages[nextId].frontStageIds.push_back(stage.id);
+    }
+
+    //step.3
+    if(isExisted){
+        curMaze->stages[stage.id] = stage;
+    }else{
+        curMaze->stages.insert(stage.id, stage);
+    }
 }
 
 MazeStage MazeHelper::getStage(int id)
 {
- const auto &maze = getCurrMaze();
-  auto it = maze.stages.find(id);
-  if(it == maze.stages.end()){
-      qFatal("not exist stage id: %d",id);
-  }
-  return maze.stages[id];
+    const auto &maze = getCurrMaze();
+    auto it = maze.stages.find(id);
+    if(it == maze.stages.end()){
+        qFatal("not exist stage id: %d",id);
+    }
+    return maze.stages[id];
+}
+
+QMap<int,QString> MazeHelper::getStageInfos(std::initializer_list<int> excludeIds)const
+{
+    QMap<int,QString> ret;
+    auto funcIsOk = [&excludeIds](int stageId)->bool{
+        for(auto it = excludeIds.begin();it != excludeIds.end();++it){
+            if(stageId == *it){
+                return false;
+            }
+        }
+        return true;
+    };
+    const auto &maze = getCurrMaze();
+    for(const auto &stage: maze.stages){
+        if(funcIsOk(stage.id)){
+            ret.insert(stage.id,stage.remark);
+        }
+    }
+    return ret;
+}
+
+QVector<int> MazeHelper::findFrontStageIds(int stageId)
+{
+    return {};
+}
+
+QVector<int> MazeHelper::findNextStageIds(int stageId)
+{
+    return {};
+}
+
+int MazeHelper::genNewOptionId(const MazeStage &stage)const
+{
+    auto funcGenId = [&stage](int maxId = 0){
+        return  maxId? maxId + 1  : stage.id * 10 + 1;
+    };
+    int maxId = 0;
+    auto keys = stage.options.keys();
+    for(auto id : keys){
+        if(maxId < id){
+            maxId = id;
+        }
+    }
+    return funcGenId(maxId);
+}
+
+void MazeHelper::setOption(int stageId, MazeOption &option)
+{
+    auto &currMaze = m_maze[currId];
+    if(currMaze->stages.find(stageId) != currMaze->stages.cend()){
+        auto &ops = currMaze->stages[stageId].options;
+        if(ops.find(option.id) != ops.end()){
+            ops[option.id] = option;
+        }else{
+            ops.insert(option.id,option);
+        }
+    }else{
+        qFatal("maze donot exist stageId: %d",stageId);
+    }
+}
+
+MazeOption MazeHelper::getOption(int stageId,int optionId)
+{
+    auto &currMaze = m_maze[currId];
+    if(currMaze->stages.find(stageId) != currMaze->stages.cend()){
+        auto &ops = currMaze->stages[stageId].options;
+        if(ops.find(optionId) != ops.end()){
+            return ops[optionId];
+        }else{
+            qFatal("stageId: %d donot exist optionId: %d",stageId,optionId);
+        }
+    }else{
+        qFatal("maze donot exist stageId: %d",stageId);
+    }
 }

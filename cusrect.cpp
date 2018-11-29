@@ -8,6 +8,7 @@
 #include "formmgr.h"
 #include "msgcenter.h"
 #include "dlgsetstage.h"
+#include <QMessageBox>
 
 CusRect::CusRect(int f,QGraphicsItem *parent)
     :QGraphicsRectItem(QRectF(0,0,100,66),parent),
@@ -15,7 +16,7 @@ CusRect::CusRect(int f,QGraphicsItem *parent)
       arrows()
 {
     setZValue(10);
-//    setFlag(QGraphicsItem::ItemIsMovable,true);
+    //    setFlag(QGraphicsItem::ItemIsMovable,true);
     setAcceptDrops(true);
     setBrush(QBrush(QColor::fromRgb(0,160,230)));
 }
@@ -64,12 +65,14 @@ void CusRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 void CusRect::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
-    if(event->button() == Qt::LeftButton){
-        qWarning("cusrect mouseDoubleClickEvent");
-        DlgSetStage *dlg = new DlgSetStage();
-       dlg->init(id);
-       dlg->show();
+    qWarning("cusrect mouseDoubleClickEvent");
+    if(getId() == 0){
+        QMessageBox::information(nullptr,QString("警告"),QString("不可对出口标记进行编辑"));
+        return;
     }
+    DlgSetStage *dlg = new DlgSetStage();
+    dlg->init(id);
+    dlg->show();
 }
 
 void CusRect::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
@@ -107,12 +110,12 @@ void CusRect::changeArrows()
 
 void CusRect::asEntry()
 {
-     setBrush(QBrush(Qt::green));
+    setBrush(QBrush(Qt::green));
 }
 
 void CusRect::asExit()
 {
-     setBrush(QBrush(Qt::red));
+    setBrush(QBrush(Qt::red));
 }
 
 void CusRect::updateRectPosData()

@@ -8,6 +8,7 @@
 #include <utility>
 #include <QVector>
 #include <QPoint>
+#include <initializer_list>
 
 class BaseJSONHelper
 {
@@ -27,13 +28,15 @@ protected:
 
 struct MazeOption
 {
-        int id = 0;
-        QString text = "";
-        QString activecond = "";
-        QString disabledTips = "";
-        int linkStageId = 0;//如果是出口，该值为0
-        QVector<int> events;
-        bool isonlyonce = false;
+    int id = 0;
+    QString text = "";
+    QString activecond = "";
+    QString disabledTips = "";
+    int linkStageId = 0;//如果是出口，该值为0
+    QVector<int> events;
+    bool isonlyonce = false;
+
+    QString remark;
 };
 
 struct MazeStage
@@ -46,11 +49,12 @@ struct MazeStage
     QString desc = "";
     int entryStoryId = 0;
 
+    QString remark;
+
     QMap<int,MazeOption> options;
     QPoint pos;//stage在view中的位置
-        /// 没有使用
     QVector<int> frontStageIds;//与该stage相连的前置stage
-        /// 没有使用
+    /// 没有使用
     QVector<int> nextStageIds;//与该stage相连的后置stage
 };
 
@@ -82,6 +86,9 @@ public:
     ///@brief 尝试创建一个迷宫数据
     void create(const MazeData&);
 
+    ///@brief 获取所有迷宫的简要信息：名称和id
+    QMap<int,QString> getBriefInfo() const;
+
     ///@brief 检测mazeid,potid,name,是否有效
     std::tuple<bool,QString> checkIsValid(const MazeData &);
 
@@ -90,18 +97,23 @@ public:
 
     MazeData copyCurrMaze()const ;
 
+    ///@brief 获取所有stage的名称和id
+    QMap<int,QString> getStageInfos(std::initializer_list<int> excludeIds = {})const;
     const MazeData &getCurrMaze()const;
     bool setCurrMaze(const MazeData &);
     bool setCurrMaze(int);
     bool isAlreadyExist();
-    ///@brief 获取所有迷宫的简要信息：名称和id
-    QMap<int,QString> getBriefInfo() const;
 
 
     ///@brief 生成最大的stageid
     int genNewStageId() const;
+    ///@brief 会对该stage重新设置关联stage
     void setStage(MazeStage&);
-    MazeStage getStage(int);
+    MazeStage getStage(int stageId);
+
+    int genNewOptionId(const MazeStage &stage)const;
+    void setOption(int stageId,MazeOption &);
+    MazeOption getOption(int stageId,int optionId);
 
 protected:
     void read(const QJsonObject &) override;
@@ -115,6 +127,11 @@ protected:
 
 private:
     MazeHelper();
+
+    ///@brief 根据stageid查找关联前置的stageId
+    QVector<int> findFrontStageIds(int stageId);
+    ///@brief 根据stageid查找关联后置的stageId
+    QVector<int> findNextStageIds(int stageId);
 
     QMap<int, std::shared_ptr<MazeData>> m_maze;
     int currId;

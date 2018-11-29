@@ -7,6 +7,7 @@
 #include <string>
 #include <QString>
 #include <QMap>
+#include <QVector>
 
 struct BaseMsg;
 
@@ -38,8 +39,8 @@ enum class MsgKeys
     OpenNewMazeView,
     OpenDlgSetStage,
     ConfirmModifyBasicInfo,
-    ConfirmOpenMaze
-
+    ConfirmOpenMaze,
+    ResetNextArrows
 };
 
 std::string key2str(MsgKeys k);
@@ -82,6 +83,13 @@ struct MsgSetBasicInfo : public BaseMsg
     QString name;               //迷宫的名称，用于区分不同的迷宫
     int potId;                  //迷宫所在的pot点id
     QMap<int, int> tickets; //进入迷宫所需的门票，没有就是空容器
+};
+
+struct MsgResetArrows : public BaseMsg
+{
+    int stageId;
+    QMap<int,int> opIdLinkToStageId;
+    QVector<int> delOpIds;
 };
 
 template <typename T>

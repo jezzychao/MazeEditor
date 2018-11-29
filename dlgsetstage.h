@@ -2,6 +2,7 @@
 #define DLGSETSTAGE_H
 
 #include <QDialog>
+#include <QVector>
 
 namespace Ui {
 class DlgSetStage;
@@ -26,6 +27,7 @@ private:
 
     Ui::DlgSetStage *ui;
     int stageId;
+    QVector<int> allStageIds;
 };
 
 #endif // DLGSETSTAGE_H

@@ -32,6 +32,7 @@ mazeeditor::mazeeditor(QWidget *parent) :
 mazeeditor::~mazeeditor()
 {
     MsgCenter::getInstance()->detach(key2str(MsgKeys::ConfirmOpenMaze));
+    MsgCenter::getInstance()->detach(key2str(MsgKeys::ConfirmModifyBasicInfo));
     delete ui;
 }
 

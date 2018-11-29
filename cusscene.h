@@ -7,6 +7,7 @@
 
 class CusRect;
 class CusArrow;
+class BaseMsg;
 
 class CusScene:public QGraphicsScene
 {
@@ -32,6 +33,11 @@ private slots:
 private :
     void ctor();
     void dtor();
+
+    void acceptNotify(const std::string &, const BaseMsg &);
+
+    void resetNextArrows(std::shared_ptr<CusRect>);
+    void delArrows(std::shared_ptr<CusRect>);
 
     QMap<int, std::shared_ptr<CusRect>> allRects;
     QMap<int, std::shared_ptr<CusArrow>> allArrows;
