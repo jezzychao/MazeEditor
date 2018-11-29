@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include "cusscene.h"
 #include "dlgopenmaze.h"
+#include "dlgsetoption.h"
 
 bool isCanUseTopBtn()
 {
@@ -27,10 +28,14 @@ mazeeditor::mazeeditor(QWidget *parent) :
     MsgCenter::getInstance()->attach(key2str(MsgKeys::ConfirmModifyBasicInfo), [&](const std::string &key, const BaseMsg &msg) {
         this->acceptNotify(key,msg);
     });
+    MsgCenter::getInstance()->attach(key2str(MsgKeys::OpenDlgSetOption), [&](const std::string &key, const BaseMsg &msg) {
+        this->acceptNotify(key,msg);
+    });
 }
 
 mazeeditor::~mazeeditor()
 {
+    MsgCenter::getInstance()->detach(key2str(MsgKeys::OpenDlgSetOption));
     MsgCenter::getInstance()->detach(key2str(MsgKeys::ConfirmOpenMaze));
     MsgCenter::getInstance()->detach(key2str(MsgKeys::ConfirmModifyBasicInfo));
     delete ui;
@@ -49,6 +54,11 @@ void mazeeditor::acceptNotify(const std::string &key, const BaseMsg &msg)
         }else{
             qWarning("no operation");
         }
+    }else if(key == key2str(MsgKeys::OpenDlgSetOption)){
+        const auto &m = static_cast<const MsgInt&>(msg);
+        DlgSetOption *dlg = new DlgSetOption(this);
+        dlg->init(m.number);
+        dlg->exec();
     }
 }
 

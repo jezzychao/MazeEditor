@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QVector>
+#include <utility>
 
 namespace Ui {
 class DlgSetStage;
@@ -23,7 +24,10 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_pushButton_2_clicked();
+
 private:
+    std::tuple<bool,QString> inputIsValid();
 
     Ui::DlgSetStage *ui;
     int stageId;

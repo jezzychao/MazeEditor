@@ -28,6 +28,8 @@ public:
 
     void asExit();
 
+    QVector<std::shared_ptr<CusArrow>> getArrows(){return arrows;}
+
 protected:
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

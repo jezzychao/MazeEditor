@@ -32,7 +32,7 @@ struct MazeOption
     QString text = "";
     QString activecond = "";
     QString disabledTips = "";
-    int linkStageId = 0;//如果是出口，该值为0
+    int linkStageId = -1;//如果是出口，该值为0
     QVector<int> events;
     bool isonlyonce = false;
 
@@ -112,8 +112,8 @@ public:
     MazeStage getStage(int stageId);
 
     int genNewOptionId(const MazeStage &stage)const;
-    void setOption(int stageId,MazeOption &);
-    MazeOption getOption(int stageId,int optionId);
+    void setOption(MazeOption &);
+    MazeOption getOption(int optionId);
 
 protected:
     void read(const QJsonObject &) override;

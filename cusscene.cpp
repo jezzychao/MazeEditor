@@ -7,9 +7,14 @@
 CusScene::CusScene(QObject *parent )
     :QGraphicsScene(QRectF(-2000,-2000,4000,4000),parent),
       allRects(),
-      allArrows()
+      allArrows(),
+      currSelectedRect(-1),
+      currSelectedArrow(-1)
 {
     MsgCenter::getInstance()->attach(key2str(MsgKeys::ResetNextArrows), [&](const std::string &key, const BaseMsg &msg) {
+        this->acceptNotify(key,msg);
+    });
+    MsgCenter::getInstance()->attach(key2str(MsgKeys::DeleteRect), [&](const std::string &key, const BaseMsg &msg) {
         this->acceptNotify(key,msg);
     });
 }
@@ -17,6 +22,7 @@ CusScene::CusScene(QObject *parent )
 CusScene::~CusScene()
 {
     MsgCenter::getInstance()->detach(key2str(MsgKeys::ResetNextArrows));
+    MsgCenter::getInstance()->detach(key2str(MsgKeys::DeleteRect));
 }
 
 void CusScene::acceptNotify(const std::string &key, const BaseMsg &msg)
@@ -49,12 +55,16 @@ void CusScene::acceptNotify(const std::string &key, const BaseMsg &msg)
                 it_rect.value()->attachArrow(arrow);
             }
         }
+    }else if(key == key2str(MsgKeys::DeleteRect)){
+        const auto &data = static_cast<const MsgInt&>(msg);
+        delRect(data.number);
     }
 }
 
 void CusScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     qDebug("*********MyScene::mousePressEvent***************");
+
     QGraphicsScene::mousePressEvent(event);
 }
 
@@ -177,6 +187,66 @@ void CusScene::addRect(const QPointF &p)
     allRects.insert(stage.id,exit);
     addItem(exit.get());
     exit->setPos(p);
+}
+
+void CusScene::delRect(int rectId)
+{
+    //1.step.寻找关联的rects,修改对应数据,stage.next and stage.front,detach arrows
+    //2.step.寻找关联的arrows,删除对应的数据：option,
+    //3.step.删除本身stage数据
+    //4.step。更新界面
+
+    auto it = allRects.find(rectId);
+    if(it == allRects.end()){
+        qWarning("do not exist rect id: %d",rectId);
+        return;
+    }
+    auto target = it.value();
+    auto aboutArrows = target->getArrows();
+    QVector<decltype (target)> aboutRects;
+    for(auto &aw: aboutArrows){
+        if(aw->getEndedRect()->getId() != rectId){
+            aboutRects.push_back(aw->getEndedRect());
+        }
+        if(aw->getStartedRect()->getId() != rectId){
+            aboutRects.push_back(aw->getStartedRect());
+        }
+    }
+
+    auto currMaze = MazeHelper::getInstance()->copyCurrMaze();
+    for(auto &rt: aboutRects){
+        auto it = currMaze.stages.find(rt->getId());
+        it->frontStageIds.removeOne(rectId);
+        it->nextStageIds.removeOne(rectId);
+        for(auto &aw: aboutArrows){
+            rt->detachArrow(aw->getId());
+        }
+    }
+
+    for(auto &aw: aboutArrows){
+        for(auto &stage: currMaze.stages){
+            bool isExisted = false;
+            for(auto &option: stage.options){
+                if(option.id == aw->getId()){
+                    isExisted = true;
+                    break;
+                }
+            }
+            if(isExisted){
+                stage.options.remove(aw->getId());
+            }
+        }
+    }
+
+    currMaze.stages.remove(rectId);
+
+    MazeHelper::getInstance()->setCurrMaze(currMaze);
+    MazeHelper::getInstance()->save();
+
+    for(auto &aw: aboutArrows){
+        removeItem(aw.get());
+    }
+    removeItem(target.get());
 }
 
 void CusScene::resetNextArrows(std::shared_ptr<CusRect> rect)

@@ -17,7 +17,11 @@ public:
     void adjust();
 
     int getId()const{return id;}
+
+    std::shared_ptr<CusRect> getStartedRect(){return rectA;}
+    std::shared_ptr<CusRect> getEndedRect(){return rectB;}
 protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void paint(QPainter *, const QStyleOptionGraphicsItem* ,QWidget *) override;
 private:
     int id;//对应 mazeoption 中的id

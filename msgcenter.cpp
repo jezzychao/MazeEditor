@@ -10,8 +10,10 @@ QMap<MsgKeys, QString> keystr{
     {   MsgKeys::OpenTipsDlg, "OpenTipsDlg" },
     {   MsgKeys::OpenSetBasicInfoForSet, "OpenSetBasicInfoForSet" },
     {   MsgKeys::OpenSetBasicInfoForNew, "OpenSetBasicInfoForNew" },
-     {   MsgKeys::OpenNewMazeView, "OpenNewMazeView" },
+    {   MsgKeys::OpenNewMazeView, "OpenNewMazeView" },
+    {   MsgKeys::OpenDlgSetOption, "OpenDlgSetOption" },
     {   MsgKeys::OpenDlgSetStage, "OpenDlgSetStage" },
+    {   MsgKeys::DeleteRect, "DeleteRect" },
     {   MsgKeys::ConfirmModifyBasicInfo, "ConfirmModifyBasicInfo" },
     {   MsgKeys::ConfirmOpenMaze, "ConfirmOpenMaze" }
 };

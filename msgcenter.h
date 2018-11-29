@@ -38,9 +38,11 @@ enum class MsgKeys
     OpenSetBasicInfoForNew,
     OpenNewMazeView,
     OpenDlgSetStage,
+    OpenDlgSetOption,
     ConfirmModifyBasicInfo,
     ConfirmOpenMaze,
-    ResetNextArrows
+    ResetNextArrows,
+    DeleteRect
 };
 
 std::string key2str(MsgKeys k);

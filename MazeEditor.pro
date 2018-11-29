@@ -41,7 +41,9 @@ SOURCES += \
     cusarrow.cpp \
     cusscene.cpp \
     dlgsetstage.cpp \
-    cusview.cpp
+    cusview.cpp \
+    dlgsetoption.cpp \
+    dlgconfirm.cpp
 
 HEADERS += \
         mazeeditor.h \
@@ -59,14 +61,18 @@ HEADERS += \
     cusarrow.h \
     cusscene.h \
     dlgsetstage.h \
-    cusview.h
+    cusview.h \
+    dlgsetoption.h \
+    dlgconfirm.h
 
 FORMS += \
         mazeeditor.ui \
     setbasicinfo.ui \
     tipsdialog.ui \
     dlgopenmaze.ui \
-    dlgsetstage.ui
+    dlgsetstage.ui \
+    dlgsetoption.ui \
+    dlgconfirm.ui
 
 QT += axcontainer
 

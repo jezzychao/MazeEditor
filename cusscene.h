@@ -19,6 +19,8 @@ public:
 
     void addRect(const QPointF &);
 
+    void delRect(int rectId);
+
 protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
@@ -41,6 +43,9 @@ private :
 
     QMap<int, std::shared_ptr<CusRect>> allRects;
     QMap<int, std::shared_ptr<CusArrow>> allArrows;
+
+    int currSelectedRect;
+    int currSelectedArrow;
 };
 
 #endif // CUSSCENE_H

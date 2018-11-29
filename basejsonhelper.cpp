@@ -496,32 +496,38 @@ int MazeHelper::genNewOptionId(const MazeStage &stage)const
     return funcGenId(maxId);
 }
 
-void MazeHelper::setOption(int stageId, MazeOption &option)
+void MazeHelper::setOption(MazeOption &option)
 {
-    auto &currMaze = m_maze[currId];
-    if(currMaze->stages.find(stageId) != currMaze->stages.cend()){
-        auto &ops = currMaze->stages[stageId].options;
-        if(ops.find(option.id) != ops.end()){
-            ops[option.id] = option;
-        }else{
-            ops.insert(option.id,option);
-        }
-    }else{
-        qFatal("maze donot exist stageId: %d",stageId);
+    if(currId == 0){
+        qFatal("Have not opened maze");
     }
+    auto &currMaze = m_maze[currId];
+    for(auto it =currMaze->stages.cbegin();it != currMaze->stages.cend();++it){
+        const auto &ops = it.value().options;
+        for(auto it_op = ops.begin();it_op != ops.end();++it_op){
+            if(option.id == it_op->id){
+                currMaze->stages[it.key()].options[it_op.key()] = option;
+                return ;
+            }
+        }
+    }
+    qFatal("Do not exist optionId: %d in maze: %d",option.id,currMaze->id);
 }
 
-MazeOption MazeHelper::getOption(int stageId,int optionId)
+MazeOption MazeHelper::getOption(int optionId)
 {
-    auto &currMaze = m_maze[currId];
-    if(currMaze->stages.find(stageId) != currMaze->stages.cend()){
-        auto &ops = currMaze->stages[stageId].options;
-        if(ops.find(optionId) != ops.end()){
-            return ops[optionId];
-        }else{
-            qFatal("stageId: %d donot exist optionId: %d",stageId,optionId);
-        }
-    }else{
-        qFatal("maze donot exist stageId: %d",stageId);
+    if(currId == 0){
+        qFatal("Have not opened maze");
     }
+    auto &currMaze = m_maze[currId];
+
+    for(auto it =currMaze->stages.cbegin();it != currMaze->stages.cend();++it){
+        const auto &ops = it.value().options;
+        for(auto it_op = ops.cbegin();it_op != ops.cend();++it_op){
+            if(optionId == it_op->id){
+                return it_op.value();
+            }
+        }
+    }
+    qFatal("Do not exist optionId: %d in maze: %d",optionId,currMaze->id);
 }

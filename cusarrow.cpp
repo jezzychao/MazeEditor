@@ -1,6 +1,7 @@
 #include "cusarrow.h"
 #include "cusrect.h"
 #include <QPainter>
+#include "msgcenter.h"
 
 namespace  {
 const double Pi = 3.14159265358979323846264338327950288419717;
@@ -59,5 +60,10 @@ void CusArrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *style,QW
     painter->setPen(p);
     painter->drawLine(p1,p2);
     painter->drawPolygon(QPolygonF()<<p2<<arrowP1<<arrowP2);
+}
+
+void CusArrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    MsgCenter::getInstance()->notify(key2str(MsgKeys::OpenDlgSetOption),MsgInt(id));
 }
 

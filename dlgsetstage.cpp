@@ -3,6 +3,8 @@
 #include <QStringList>
 #include "basejsonhelper.h"
 #include "msgcenter.h"
+#include <QMessageBox>
+#include "dlgconfirm.h"
 
 DlgSetStage::DlgSetStage(QWidget *parent) :
     QDialog(parent),
@@ -64,6 +66,12 @@ void DlgSetStage::init(int id)
 void DlgSetStage::on_pushButton_clicked()
 {
     qDebug("on_pushButton_clicked");
+    auto result = inputIsValid();
+    if(!std::get<0>(result)){
+        QMessageBox::information(this,"警告",std::get<1>(result));
+        return;
+    }
+
     auto stage = MazeHelper::getInstance()->getStage(stageId);
     stage.desc =  ui->txt_desc->toPlainText();
     stage.mappingId =  ui->txt_mappindId->toPlainText().toInt();
@@ -133,4 +141,36 @@ void DlgSetStage::on_pushButton_clicked()
 
     MazeHelper::getInstance()->save();
     close();
+}
+
+std::tuple<bool,QString> DlgSetStage::inputIsValid()
+{
+    QVector<int> used;
+    QVector<decltype(ui->cbx_link_1)> cbxs({ui->cbx_link_1,ui->cbx_link_2,ui->cbx_link_3});
+    for(auto &cobom: cbxs){
+        auto idx = cobom->currentIndex();
+        bool isExisted = false;
+        for(auto &v:used){
+            if(idx == v && idx != 0){
+                isExisted = true;
+                break;
+            }
+        }
+        if(isExisted){
+            return std::make_tuple(false,QString("有多个重复的后置节点，请检查输入！"));
+        }else{
+            used.push_back(idx);
+        }
+    }
+    return std::make_tuple(true,QString());
+}
+
+void DlgSetStage::on_pushButton_2_clicked()
+{
+    DlgConfirm *dlg = new DlgConfirm("确认删除该物体？",this);
+    auto result = dlg->exec();
+    if( result== QDialog::Accepted){
+        MsgCenter::getInstance()->notify(key2str(MsgKeys::DeleteRect),MsgInt(stageId));
+        close();
+    }
 }
