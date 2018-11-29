@@ -27,49 +27,45 @@ protected:
 
 struct MazeOption
 {
-        int id;
-        QString text;
-        QString activecond;
-        QString disabledTips;
-        int linkStageId;//如果是出口，该值为0
+        int id = 0;
+        QString text = "";
+        QString activecond = "";
+        QString disabledTips = "";
+        int linkStageId = 0;//如果是出口，该值为0
         QVector<int> events;
-        bool isonlyonce;
+        bool isonlyonce = false;
 };
 
 struct MazeStage
 {
-    int id;
-    int type;
-    int mappingId;
-    QString name;
-    QString sprite;
-    QString desc;
-    int entryStoryId;
+    int id = 0;
+    int type = 0;
+    int mappingId = 0;
+    QString name = "";
+    QString sprite = "";
+    QString desc = "";
+    int entryStoryId = 0;
 
     QMap<int,MazeOption> options;
     QPoint pos;//stage在view中的位置
+        /// 没有使用
     QVector<int> frontStageIds;//与该stage相连的前置stage
+        /// 没有使用
     QVector<int> nextStageIds;//与该stage相连的后置stage
-};
-
-///在编辑器中位置
-struct MazeStagePos
-{
-    MazeStagePos(int _x = 0,int _y = 0):x(_x),y(_y){}
-    int x;
-    int y;
 };
 
 ///单个迷宫在编辑器中的配置数据
 struct MazeData{
     ///@brief id
-    int id;
+    int id = 0;
     ///@brief 迷宫名称
-    QString name;
+    QString name = "";
     ///@brief 迷宫所在的怕potid
-    int potId;
-    ///@brief 迷宫开始的stage id
-    int beginStageId;
+    int potId = 0;
+    /// 没有使用
+    int beginStageId = 0;
+    /// 没有使用
+    int endStageId = 0;
     ///@brief 进入迷宫所需要的门票
     QMap<int,int> tickets;
 
@@ -100,6 +96,13 @@ public:
     bool isAlreadyExist();
     ///@brief 获取所有迷宫的简要信息：名称和id
     QMap<int,QString> getBriefInfo() const;
+
+
+    ///@brief 生成最大的stageid
+    int genNewStageId() const;
+    void setStage(MazeStage&);
+    MazeStage getStage(int);
+
 protected:
     void read(const QJsonObject &) override;
     void write(QJsonObject &) override;
@@ -112,9 +115,6 @@ protected:
 
 private:
     MazeHelper();
-
-    ///@brief 生成最大的stageid
-    int genNewStageId(int) const;
 
     QMap<int, std::shared_ptr<MazeData>> m_maze;
     int currId;

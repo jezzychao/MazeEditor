@@ -33,6 +33,6 @@ void DlgOpenMaze::on_pushButton_clicked()
         MazeHelper::getInstance()->save();
         MsgCenter::getInstance()->notify(key2str(MsgKeys::ConfirmOpenMaze), MsgNull());
     }
-    FormMgr::getInstance()->close("dlgopenmaze");
+    close();
 
 }

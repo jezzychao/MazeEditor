@@ -5,6 +5,8 @@
 #include "msgcenter.h"
 #include "basejsonhelper.h"
 #include <QMessageBox>
+#include "cusscene.h"
+#include "dlgopenmaze.h"
 
 bool isCanUseTopBtn()
 {
@@ -15,8 +17,10 @@ mazeeditor::mazeeditor(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::mazeeditor)
 {
-    MazeHelper::getInstance()->load();
     ui->setupUi(this);
+    ui->graphicsView->setEnabled(false);
+
+    MazeHelper::getInstance()->load();
     MsgCenter::getInstance()->attach(key2str(MsgKeys::ConfirmOpenMaze), [&](const std::string &key, const BaseMsg &msg) {
         this->acceptNotify(key,msg);
     });
@@ -34,13 +38,13 @@ mazeeditor::~mazeeditor()
 void mazeeditor::acceptNotify(const std::string &key, const BaseMsg &msg)
 {
     if(key == key2str(MsgKeys::ConfirmOpenMaze)){
-        clearView();
-        initView();
+        ui->graphicsView->setEnabled(true);
+        ui->graphicsView->reset();
     }else if(key == key2str(MsgKeys::ConfirmModifyBasicInfo)){
         auto &newMsg = static_cast<const MsgCloseTipsDlg &>(msg);
         if(newMsg.status){
-            clearView();
-            initView();
+            ui->graphicsView->setEnabled(true);
+            ui->graphicsView->reset();
         }else{
             qWarning("no operation");
         }
@@ -55,7 +59,8 @@ void mazeeditor::on_btn_new_clicked()
 
 void mazeeditor::on_btn_open_clicked()
 {
-    FormMgr::getInstance()->open("dlgopenmaze");
+    DlgOpenMaze *dlg = new DlgOpenMaze(this);
+    dlg->exec();
 }
 
 void mazeeditor::on_btn_set_clicked()
@@ -63,7 +68,7 @@ void mazeeditor::on_btn_set_clicked()
     if(!isCanUseTopBtn()){
         QMessageBox::information(this, tr("信息"), tr("没有打开的迷宫"));
         qWarning("btn_basicInfo is invalid!!!");
-       return;
+        return;
     }
     FormMgr::getInstance()->open("setbasicinfo");
     MsgCenter::getInstance()->notify(key2str(MsgKeys::OpenSetBasicInfoForSet),MsgNull());
@@ -72,17 +77,9 @@ void mazeeditor::on_btn_set_clicked()
 void mazeeditor::on_btn_save_clicked()
 {
     if(!isCanUseTopBtn()){
-         QMessageBox::information(this, tr("信息"), tr("没有打开的迷宫"));
+        QMessageBox::information(this, tr("信息"), tr("没有打开的迷宫"));
         qWarning("btn_save is invalid!!!");
-       return;
+        return;
     }
     MazeHelper::getInstance()->save();
-}
-
-void mazeeditor::clearView(){
-    ui->graphicsView->clearView();
-}
-
-void mazeeditor::initView(){
-     ui->graphicsView->initView();
 }

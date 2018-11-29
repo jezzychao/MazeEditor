@@ -2,51 +2,29 @@
 #define CUSVIEW_H
 
 #include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QMouseEvent>
 #include <QMenu>
 #include <QAction>
 #include <QContextMenuEvent>
+#include <QMouseEvent>
 
-class CusView : public QGraphicsView
+class CusScene;
+
+class CusView:public QGraphicsView
 {
-    Q_OBJECT
+        Q_OBJECT
 public:
-    CusView(QWidget *pw = nullptr);
-    ~CusView();
+    CusView(QWidget *parent = nullptr);
+    ~CusView()override;
 
-    ///@brief 创建视图区域
-    void initView();
-
-    ///@brief 清空视图区域
-    void clearView();
-
+    void reset();
 protected:
-    void mousePressEvent(QMouseEvent *);
-    //    void mouseReleaseEvent(QMouseEvent *);
-    //    void mouseDoubleClickEvent(QMouseEvent *);
-    //    void mouseMoveEvent(QMouseEvent *);
-//    void wheelEvent(QWheelEvent *);
-
-    private slots:
-        void on_rightbutton_triggered(bool);
-
-private:
-    ///@brief 创建右键菜单
-    void initRBMenu();
-
-    ///@brief 创建一个方块
-    void createStage();
-
-    ///@brief 删除一个方块，同时清除入度和出度
-    //void deleteStage();
-
-
-
-private:
-    QGraphicsScene *m_pScene;
-    QMenu *m_pMenu;
-    QAction *m_pAddAct;
+    void mousePressEvent(QMouseEvent *) override;
+private slots:
+    void on_create_rect(bool);
+   private:
+    CusScene *scene;
+    QMenu *menu;
+    QAction *addAct;
 };
 
 #endif // CUSVIEW_H

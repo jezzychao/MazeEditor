@@ -9,11 +9,12 @@ const double TwoPi = 2.0 *Pi;
 
 CusArrow::CusArrow(int f,std::shared_ptr<CusRect> start,std::shared_ptr<CusRect> end,QGraphicsItem *parent)
     :QGraphicsItem(parent),
-      flag(f),
+      id(f),
       rectA(start),
       rectB(end)
 {
-
+        setZValue(0);
+    adjust();
 }
 
 CusArrow::~CusArrow()
@@ -30,13 +31,13 @@ QRectF CusArrow::boundingRect() const
 void CusArrow::adjust()
 {
     prepareGeometryChange();
-    QPointF pt = mapFromItem(static_cast<QGraphicsRectItem*>(rectB.get()),0,0);
-    QPointF ps = mapFromItem(static_cast<QGraphicsRectItem*>(rectA.get()),0,0);
+    QPointF pt = mapFromItem(rectB.get(),rectB->rect().width() / 2,rectB->rect().height() / 2);
+    QPointF ps = mapFromItem(rectA.get(),rectA->rect().width() / 2,rectA->rect().height() / 2);
     p1 = ps;
     if(ps.y() < pt.y()){
-        p2 = QPointF(pt.x(),pt.y()-20);
+        p2 = QPointF(pt.x(),pt.y()-rectB->rect().height() / 2);
     }else{
-        p2 = QPointF(pt.x(),pt.y()+20);
+        p2 = QPointF(pt.x(),pt.y()+rectB->rect().height() / 2);
     }
 
     QLineF line(p1,p2);

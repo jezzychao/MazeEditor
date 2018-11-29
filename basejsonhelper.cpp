@@ -93,6 +93,7 @@ void MazeHelper::read(const QJsonObject &json)
             data.name =  mazeJson["name"].toString();
             data.id = mazeJson["id"].toInt();
             data.beginStageId = mazeJson["beginStageId"].toInt();
+             data.beginStageId = mazeJson["endStageId"].toInt();
             auto ticketsJson = mazeJson["tickets"].toObject();
             if(!ticketsJson.isEmpty()){
                 auto itemIds = ticketsJson.keys();
@@ -134,6 +135,7 @@ void MazeHelper::write(QJsonObject &json)
         mazeJson["name"] = maze->name;
         mazeJson["potId"] = maze->potId;
         mazeJson["beginStageId"] =maze->beginStageId;
+        mazeJson["endStageId"] = maze->endStageId;
         QJsonObject tickets;
         for(auto it =maze->tickets.cbegin();it != maze->tickets.cend();++it){
             tickets[QString::number(it.key())] = it.value();
@@ -380,8 +382,9 @@ std::tuple<bool,QString> MazeHelper::modifyIsValid(int originalId, const MazeDat
     return std::make_tuple(result,errmsg);
 }
 
-int MazeHelper::genNewStageId(int mazeId) const
+int MazeHelper::genNewStageId() const
 {
+    int mazeId = currId;
     auto funcGenId = [mazeId](int maxId = 0){
         return  maxId? maxId + 1  : mazeId * 10 + 1;
     };
@@ -398,4 +401,26 @@ int MazeHelper::genNewStageId(int mazeId) const
         }
         return funcGenId(maxId);
     }
+}
+
+void MazeHelper::setStage( MazeStage&stage)
+{
+    auto maze = copyCurrMaze();
+    auto it = maze.stages.find(stage.id);
+    if(it != maze.stages.end()){
+        maze.stages[stage.id] = stage;
+    }else{
+        maze.stages.insert(stage.id, stage);
+    }
+    setCurrMaze(maze);
+}
+
+MazeStage MazeHelper::getStage(int id)
+{
+ const auto &maze = getCurrMaze();
+  auto it = maze.stages.find(id);
+  if(it == maze.stages.end()){
+      qFatal("not exist stage id: %d",id);
+  }
+  return maze.stages[id];
 }

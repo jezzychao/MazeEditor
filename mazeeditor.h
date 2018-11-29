@@ -10,6 +10,8 @@ class mazeeditor;
 
 struct BaseMsg;
 
+class CusScene;
+
 class mazeeditor : public QMainWindow
 {
     Q_OBJECT
@@ -29,12 +31,6 @@ private slots:
 
 private:
     void acceptNotify(const std::string &, const BaseMsg &);
-
-    ///@brief 清空可视化界面
-    void clearView();
-
-    ///@brief 根据数据来创建可视化界面
-    void initView();
 
     Ui::mazeeditor *ui;
 };

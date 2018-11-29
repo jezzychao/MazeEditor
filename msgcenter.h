@@ -36,8 +36,10 @@ enum class MsgKeys
     OpenSetBasicInfoForSet,
     OpenSetBasicInfoForNew,
     OpenNewMazeView,
+    OpenDlgSetStage,
     ConfirmModifyBasicInfo,
     ConfirmOpenMaze
+
 };
 
 std::string key2str(MsgKeys k);
@@ -52,6 +54,15 @@ struct BaseMsg
 
 struct MsgNull : public BaseMsg
 {
+};
+
+struct MsgInt:public BaseMsg
+{
+    MsgInt(int _i)
+        :number(_i)
+    {
+    }
+    int number;
 };
 
 struct MsgOpenTipsDlg : public BaseMsg

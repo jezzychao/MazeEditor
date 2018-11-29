@@ -11,6 +11,7 @@ QMap<MsgKeys, QString> keystr{
     {   MsgKeys::OpenSetBasicInfoForSet, "OpenSetBasicInfoForSet" },
     {   MsgKeys::OpenSetBasicInfoForNew, "OpenSetBasicInfoForNew" },
      {   MsgKeys::OpenNewMazeView, "OpenNewMazeView" },
+    {   MsgKeys::OpenDlgSetStage, "OpenDlgSetStage" },
     {   MsgKeys::ConfirmModifyBasicInfo, "ConfirmModifyBasicInfo" },
     {   MsgKeys::ConfirmOpenMaze, "ConfirmOpenMaze" }
 };

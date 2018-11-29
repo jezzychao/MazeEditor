@@ -3,6 +3,7 @@
 #include "setbasicinfo.h"
 #include "tipsdialog.h"
 #include "dlgopenmaze.h"
+#include "dlgsetstage.h"
 #include <stdexcept>
 #include <utility>
 
@@ -77,6 +78,8 @@ std::shared_ptr<QWidget> createForm(const std::string &name)
     else if (name == "dlgopenmaze")
     {
         return std::shared_ptr<QWidget>(new DlgOpenMaze());
+    }else if(name == "dlgsetstage"){
+        return std::shared_ptr<QWidget>(new DlgSetStage());
     }
     return nullptr;
 }

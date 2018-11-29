@@ -1,37 +1,39 @@
 #include "cusrect.h"
 #include "cusarrow.h"
+#include <QPainter>
+#include <QMimeData>
+#include <QGraphicsSceneMouseEvent>
+#include <QWidget>
+#include "basejsonhelper.h"
+#include "formmgr.h"
+#include "msgcenter.h"
+#include "dlgsetstage.h"
 
 CusRect::CusRect(int f,QGraphicsItem *parent)
-    :QGraphicsRectItem(parent),
-      flag(f),
+    :QGraphicsRectItem(QRectF(0,0,100,66),parent),
+      id(f),
       arrows()
 {
-
+    setZValue(10);
+//    setFlag(QGraphicsItem::ItemIsMovable,true);
+    setAcceptDrops(true);
+    setBrush(QBrush(QColor::fromRgb(0,160,230)));
 }
 
 CusRect::~CusRect()
 {
 }
 
-QVariant CusRect::itemChange(QGraphicsItem::GraphicsItemChange change,const QVariant &value)
+QPointF CusRect::getCenterPos()const
 {
-    switch(change){
-    case QGraphicsItem::GraphicsItemChange::ItemPositionHasChanged:
-        for(auto &p : arrows){
-            p->adjust();
-        }
-        break;
-    default:
-        break;
-    }
-    return QGraphicsItem::itemChange(change,value);
+    return pos() +  QPointF(rect().width() / 2,rect().height() / 2);
 }
 
 bool CusRect::attachArrow(std::shared_ptr<CusArrow> sp)
 {
     for(const auto &p: arrows){
-        if(p->getFlag() == sp->getFlag()){
-            qWarning("Already exist arrow:%d in rect:%d.",sp->getFlag(),flag);
+        if(p->getId() == sp->getId()){
+            qWarning("Already exist arrow:%d in rect:%d.",sp->getId(),id);
             return false;
         }
     }
@@ -42,9 +44,80 @@ bool CusRect::attachArrow(std::shared_ptr<CusArrow> sp)
 void CusRect::detachArrow(int arrowflag)
 {
     for(auto it = arrows.begin();it !=arrows.end();++it){
-        if((*it)->getFlag() == arrowflag){
+        if((*it)->getId() == arrowflag){
             arrows.erase(it);
             return;
         }
     }
+}
+
+void CusRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton){
+        qWarning("mousePressEvent");
+        auto mimeData = new QMimeData;
+        mimeData->setColorData(QVariant(QColor(Qt::green)));
+        auto  drag = new QDrag(event->widget());
+        drag->setMimeData(mimeData);
+        drag->start();
+    }
+}
+
+void CusRect::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
+    if(event->button() == Qt::LeftButton){
+        qWarning("cusrect mouseDoubleClickEvent");
+        DlgSetStage *dlg = new DlgSetStage();
+       dlg->init(id);
+       dlg->show();
+    }
+}
+
+void CusRect::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
+{
+    qWarning("dragEnterEvent");
+}
+
+void CusRect::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
+{
+    qWarning("dragMoveEvent");
+    setPos( event->pos() + pos() - QPointF(this->rect().width() / 2, this->rect().height() / 2));
+    changeArrows();
+}
+
+void CusRect::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
+{
+    qWarning("dragLeaveEvent");
+    updateRectPosData();
+}
+
+void CusRect::dropEvent(QGraphicsSceneDragDropEvent *event)
+{
+    qWarning("dropEvent");
+    setPos( event->pos() + pos() - QPointF(this->rect().width() / 2, this->rect().height() / 2));
+    changeArrows();
+    updateRectPosData();
+}
+
+void CusRect::changeArrows()
+{
+    for(auto arr :arrows){
+        arr->adjust();
+    }
+}
+
+void CusRect::asEntry()
+{
+     setBrush(QBrush(Qt::green));
+}
+
+void CusRect::asExit()
+{
+     setBrush(QBrush(Qt::red));
+}
+
+void CusRect::updateRectPosData()
+{
+    auto stage = MazeHelper::getInstance()->getStage(id);
+    stage.pos = pos().toPoint();
+    MazeHelper::getInstance()->setStage(stage);
 }

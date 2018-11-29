@@ -37,9 +37,11 @@ SOURCES += \
     excelres.cpp \
     excelbase.cpp \
     dlgopenmaze.cpp \
-    cusview.cpp \
     cusrect.cpp \
-    cusarrow.cpp
+    cusarrow.cpp \
+    cusscene.cpp \
+    dlgsetstage.cpp \
+    cusview.cpp
 
 HEADERS += \
         mazeeditor.h \
@@ -53,15 +55,18 @@ HEADERS += \
     excelres.h \
     excelbase.h \
     dlgopenmaze.h \
-    cusview.h \
     cusrect.h \
-    cusarrow.h
+    cusarrow.h \
+    cusscene.h \
+    dlgsetstage.h \
+    cusview.h
 
 FORMS += \
         mazeeditor.ui \
     setbasicinfo.ui \
     tipsdialog.ui \
-    dlgopenmaze.ui
+    dlgopenmaze.ui \
+    dlgsetstage.ui
 
 QT += axcontainer
 
