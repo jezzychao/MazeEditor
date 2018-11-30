@@ -86,6 +86,8 @@ public:
     ///@brief 尝试创建一个迷宫数据
     void create(const MazeData&);
 
+    void deleteMaze(int mazeId);
+
     ///@brief 获取所有迷宫的简要信息：名称和id
     QMap<int,QString> getBriefInfo() const;
 
@@ -136,7 +138,5 @@ private:
     QMap<int, std::shared_ptr<MazeData>> m_maze;
     int currId;
 };
-
-
 
 #endif // BASEJSONHELPER_H

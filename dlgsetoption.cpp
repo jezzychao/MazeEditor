@@ -2,6 +2,7 @@
 #include "ui_dlgsetoption.h"
 #include "basejsonhelper.h"
 #include "msgcenter.h"
+#include <QMessageBox>
 
 DlgSetOption::DlgSetOption(QWidget *parent) :
     QDialog(parent),
@@ -43,9 +44,13 @@ void DlgSetOption::on_pushButton_clicked()
     option.disabledTips = ui->txt_tips->toPlainText();
     option.isonlyonce = ui->cebox->checkState() == Qt::CheckState::Checked;
     option.events.clear();
-    auto qsl = ui->txt_events->toPlainText().split(";");
-    for(auto &v:qsl){
-        option.events.push_back(v.toInt());
+    try {
+        auto qsl = ui->txt_events->toPlainText().split(";");
+        for(auto &v:qsl){
+            option.events.push_back(v.toInt());
+        }
+    } catch (...) {
+        QMessageBox::information(nullptr,"错误","请检查事件输入项是否正确！！！");
     }
     MazeHelper::getInstance()->setOption(option);
     MazeHelper::getInstance()->save();

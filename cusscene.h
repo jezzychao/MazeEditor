@@ -17,6 +17,8 @@ public:
 
     void reset();
 
+    void clear();
+
     void addRect(const QPointF &);
 
     void delRect(int rectId);

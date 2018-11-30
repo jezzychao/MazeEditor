@@ -43,13 +43,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btn_save">
-          <property name="text">
-           <string>保存</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="btn_set">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -59,6 +52,20 @@
           </property>
           <property name="text">
            <string>设置</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_save">
+          <property name="text">
+           <string>保存</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_publish">
+          <property name="text">
+           <string>发布至result</string>
           </property>
          </widget>
         </item>
@@ -74,6 +81,13 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="bnt_del">
+          <property name="text">
+           <string>删除</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

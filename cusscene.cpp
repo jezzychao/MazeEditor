@@ -88,6 +88,11 @@ void CusScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsScene::mouseDoubleClickEvent(event);
 }
 
+void CusScene::clear()
+{
+    dtor();
+}
+
 void CusScene::reset()
 {
     if(!MazeHelper::getInstance()->isAlreadyExist()){

@@ -43,7 +43,8 @@ SOURCES += \
     dlgsetstage.cpp \
     cusview.cpp \
     dlgsetoption.cpp \
-    dlgconfirm.cpp
+    dlgconfirm.cpp \
+    publishhelper.cpp
 
 HEADERS += \
         mazeeditor.h \
@@ -63,7 +64,8 @@ HEADERS += \
     dlgsetstage.h \
     cusview.h \
     dlgsetoption.h \
-    dlgconfirm.h
+    dlgconfirm.h \
+    publishhelper.h
 
 FORMS += \
         mazeeditor.ui \

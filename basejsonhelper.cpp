@@ -531,3 +531,14 @@ MazeOption MazeHelper::getOption(int optionId)
     }
     qFatal("Do not exist optionId: %d in maze: %d",optionId,currMaze->id);
 }
+
+ void MazeHelper::deleteMaze(int mazeId)
+ {
+     if(currId == 0){
+         qFatal("Have not opened maze");
+     }
+     auto it = m_maze.find(mazeId);
+     if(it != m_maze.end()){
+         m_maze.erase(it);
+     }
+ }

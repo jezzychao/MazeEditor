@@ -25,6 +25,11 @@ void CusView::reset()
     scene->reset();
 }
 
+void CusView::clear()
+{
+     scene->clear();
+}
+
 void CusView::on_create_rect(bool)
 {
     scene->addRect(QPointF(0,0));

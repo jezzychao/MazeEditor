@@ -173,9 +173,10 @@ QVector<Item> ExItem::getValidTickets()
     if(container.size() != 0){
         for(auto it = container.cbegin();it != container.cend();++it){
             auto &item = static_cast<Item&>(*(it.value()));
-            if(item.type == 1 || item.type == 2 || item.type == 4){
-                vec.append(item);
-            }
+            vec.append(item);
+//            if(item.type == 1 || item.type == 2 || item.type == 4){
+//                vec.append(item);
+//            }
         }
     }
     return vec;

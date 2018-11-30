@@ -17,6 +17,7 @@ public:
     ~CusView()override;
 
     void reset();
+    void clear();
 protected:
     void mousePressEvent(QMouseEvent *) override;
 private slots:

@@ -27,6 +27,11 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void paint(QPainter *, const QStyleOptionGraphicsItem* ,QWidget *) override;
 private:
+    void updateTextItemPos();
+
+    ///@brief 该箭头是否可以编辑
+    bool isCanEditInfo();
+
     int id;//对应 mazeoption 中的id
     QPointF arrowP1;//箭头张开的点
     QPointF arrowP2;//箭头张开的点

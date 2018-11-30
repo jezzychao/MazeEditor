@@ -26,8 +26,27 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_typeCombox_indexChanged(int index);
+
 private:
-    std::tuple<bool,QString> inputIsValid();
+    void initForCrossing();
+
+    void initForNpcFight();
+
+    void initForCollect();
+
+    void initForBarrier();
+
+    void initForMinigame();
+
+    void initForUploading();
+
+    void initForPlayerFight();
+
+    void disabledAllInput();
+
+    ///@brief 检测后置路径是否重复
+    std::tuple<bool,QString> checkForDuplication();
 
     Ui::DlgSetStage *ui;
     int stageId;

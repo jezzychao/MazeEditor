@@ -3,7 +3,6 @@
 #include <QStringList>
 #include "basejsonhelper.h"
 #include "msgcenter.h"
-#include <QMessageBox>
 #include "dlgconfirm.h"
 
 DlgSetStage::DlgSetStage(QWidget *parent) :
@@ -14,13 +13,16 @@ DlgSetStage::DlgSetStage(QWidget *parent) :
 {
     ui->setupUi(this);
     QStringList qls {
-        "1:普通",
-        "2:战斗",
-        "3:采集",
-        "4:障碍",
-        "5:小游戏"
+        "1: 多选项",
+        "2: NPC战斗",
+        "3: 采集",
+        "4: 障碍",
+        "5: 小游戏",
+        "6: 上传镜像",
+        "7: 镜像战斗"
     };
     ui->cbx_type->addItems(qls);
+    connect(ui->cbx_type,SIGNAL(currentIndexChanged(int)), this, SLOT(on_typeCombox_indexChanged(int)));
 }
 
 DlgSetStage::~DlgSetStage()
@@ -30,7 +32,9 @@ DlgSetStage::~DlgSetStage()
 
 void DlgSetStage::init(int id)
 {
+    on_typeCombox_indexChanged(0);
     stageId = id;
+
     if(stageId == MazeHelper::getInstance()->getCurrMaze().beginStageId){
         ui->pushButton_2->setVisible(false);
     }
@@ -67,13 +71,29 @@ void DlgSetStage::init(int id)
     }
 }
 
+void DlgSetStage::on_typeCombox_indexChanged(int index){
+    disabledAllInput();
+    switch (index) {
+    case 0: initForCrossing();break;
+    case 1:  initForNpcFight();break;
+    case 2:  initForCollect();break;
+    case 3:  initForBarrier();break;
+    case 4:  initForMinigame();break;
+    case 5:  initForUploading();break;
+    case 6:  initForPlayerFight();break;
+    }
+}
+
 void DlgSetStage::on_pushButton_clicked()
 {
     qDebug("on_pushButton_clicked");
-    auto result = inputIsValid();
+    auto result = checkForDuplication();
     if(!std::get<0>(result)){
-        QMessageBox::information(this,"警告",std::get<1>(result));
-        return;
+        DlgConfirm *dlg = new DlgConfirm(QString("存在重复的后置连接，是否继续？"),this);
+        auto  ret = dlg->exec();
+        if(ret == QDialog::Rejected){
+            return;
+        }
     }
 
     auto stage = MazeHelper::getInstance()->getStage(stageId);
@@ -91,7 +111,16 @@ void DlgSetStage::on_pushButton_clicked()
     for(auto &cbx:cbxs){
         auto curIdx = cbx->currentIndex();
         if(curIdx != 0){
-            linkIds.push_back(allStageIds[curIdx]);
+            bool isExisted = false;
+            for(auto &id: linkIds){
+                if(id == allStageIds[curIdx]){
+                    isExisted = true;
+                    break;
+                }
+            }
+            if(!isExisted){
+                linkIds.push_back(allStageIds[curIdx]);
+            }
         }
     }
     stage.nextStageIds = linkIds;
@@ -148,7 +177,7 @@ void DlgSetStage::on_pushButton_clicked()
     close();
 }
 
-std::tuple<bool,QString> DlgSetStage::inputIsValid()
+std::tuple<bool,QString> DlgSetStage::checkForDuplication()
 {
     QVector<int> used;
     QVector<decltype(ui->cbx_link_1)> cbxs({ui->cbx_link_1,ui->cbx_link_2,ui->cbx_link_3});
@@ -178,4 +207,73 @@ void DlgSetStage::on_pushButton_2_clicked()
         MsgCenter::getInstance()->notify(key2str(MsgKeys::DeleteRect),MsgInt(stageId));
         close();
     }
+}
+
+void DlgSetStage::initForCrossing()
+{
+    ui->txt_name->setEnabled(true);
+    ui->txt_desc->setEnabled(true);
+    ui->txt_sprite->setEnabled(true);
+    ui->txt_mappindId->setEnabled(false);
+    ui->cbx_link_1->setEnabled(true);
+    ui->cbx_link_2->setEnabled(true);
+    ui->cbx_link_3->setEnabled(true);
+}
+
+void DlgSetStage::initForNpcFight()
+{
+    ui->txt_mappindId->setEnabled(true);
+    ui->cbx_link_1->setEnabled(true);
+    ui->lab_link_1->setText(QString("战斗完成后"));
+    ui->lab_mappingId->setText(QString("映射 stage.xlsx 中的id"));
+}
+
+void DlgSetStage::initForCollect()
+{
+    this->initForNpcFight();
+    ui->lab_link_1->setText(QString("采集完成后"));
+}
+
+void DlgSetStage::initForBarrier()
+{
+    this->initForNpcFight();
+    ui->lab_link_1->setText(QString("障碍完成后"));
+}
+
+void DlgSetStage::initForMinigame()
+{
+    ui->txt_mappindId->setEnabled(true);
+    ui->lab_mappingId->setText(QString("映射 minigames.xlsx 中的id"));
+    ui->cbx_link_1->setEnabled(true);
+    ui->cbx_link_2->setEnabled(true);
+    ui->lab_link_1->setText(QString("小游戏失败后"));
+    ui->lab_link_2->setText(QString("小游戏成功后"));
+}
+
+void DlgSetStage::initForUploading()
+{
+    initForNpcFight();
+    ui->lab_link_1->setText(QString("链接到..."));
+}
+
+void DlgSetStage::initForPlayerFight()
+{
+    initForNpcFight();
+    ui->lab_link_1->setText(QString("链接到..."));
+}
+
+///@brief 剧情i、备注和类型选择除外
+void DlgSetStage::disabledAllInput()
+{
+    ui->txt_name->setEnabled(false);
+    ui->txt_desc->setEnabled(false);
+    ui->txt_sprite->setEnabled(false);
+    ui->cbx_link_1->setEnabled(false);
+    ui->cbx_link_2->setEnabled(false);
+    ui->cbx_link_3->setEnabled(false);
+    ui->lab_link_1->clear();
+    ui->lab_link_2->clear();
+    ui->lab_link_3->clear();
+    ui->lab_mappingId->clear();
+    ui->txt_mappindId->setEnabled(false);
 }

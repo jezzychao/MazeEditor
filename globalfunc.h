@@ -7,6 +7,8 @@ namespace  myfunc  {
     const QString &getRunPath();
 
     const QString &getExcelFilesPath();
+
+    const QString &getPublishPath();
 }
 
 

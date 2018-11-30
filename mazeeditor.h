@@ -29,6 +29,10 @@ private slots:
 
     void on_btn_set_clicked();
 
+    void on_btn_publish_clicked();
+
+    void on_bnt_del_clicked();
+
 private:
     void acceptNotify(const std::string &, const BaseMsg &);
 

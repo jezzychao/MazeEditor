@@ -8,6 +8,8 @@
 #include "cusscene.h"
 #include "dlgopenmaze.h"
 #include "dlgsetoption.h"
+#include "publishhelper.h"
+#include "dlgconfirm.h"
 
 bool isCanUseTopBtn()
 {
@@ -93,4 +95,29 @@ void mazeeditor::on_btn_save_clicked()
         return;
     }
     MazeHelper::getInstance()->save();
+}
+
+void mazeeditor::on_btn_publish_clicked()
+{
+    PublishHelper helper;
+    helper.exe();
+}
+
+void mazeeditor::on_bnt_del_clicked()
+{
+    if(!isCanUseTopBtn()){
+        QMessageBox::information(this, tr("信息"), tr("没有打开的迷宫"));
+        qWarning("btn_save is invalid!!!");
+        return;
+    }
+    DlgConfirm *dlg = new DlgConfirm("确认要删除该迷宫吗？",this);
+    auto result = dlg->exec();
+    if(result == QDialog::Accepted){
+        auto mazeId = MazeHelper::getInstance()->getCurrMaze().id;
+        MazeHelper::getInstance()->deleteMaze(mazeId);
+        MazeHelper::getInstance()->setCurrMaze(0);
+        MazeHelper::getInstance()->save();
+         ui->graphicsView->clear();
+         ui->graphicsView->setEnabled(false);
+    }
 }

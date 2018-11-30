@@ -3,6 +3,7 @@
 #include <QPainter>
 #include "msgcenter.h"
 #include "basejsonhelper.h"
+#include <QMessageBox>
 
 namespace  {
 const double Pi = 3.14159265358979323846264338327950288419717;
@@ -16,7 +17,6 @@ CusArrow::CusArrow(int f,std::shared_ptr<CusRect> start,std::shared_ptr<CusRect>
       rectB(end),
       text(new QGraphicsTextItem(this))
 {
-
     setZValue(0);
     adjust();
     text->setDefaultTextColor(Qt::black);  // 文本色
@@ -54,22 +54,34 @@ void CusArrow::adjust()
 
     arrowP1 = p2 + QPointF(sin(angle- Pi / 3)*8,cos(angle - Pi / 3)*8);
     arrowP2 = p2 + QPointF(sin(angle - Pi + Pi / 3)*8,cos(angle - Pi + Pi / 3) *8);
+    updateTextItemPos();
 }
 
 void CusArrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *style,QWidget *w)
 {
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setBrush(QBrush(QColor::fromRgb(79,136,187)));
-    QPen p(QColor::fromRgb(79,136,187));
-    p.setWidthF(1.5);
-    painter->setPen(p);
+    if(isCanEditInfo()){
+        painter->setBrush(QBrush(QColor::fromRgb(79,136,187)));
+        QPen p(QColor::fromRgb(79,136,187));
+        p.setWidthF(1.5);
+        painter->setPen(p);
+    }else{
+        painter->setBrush(QBrush(Qt::gray));
+        QPen p(Qt::gray);
+        p.setWidthF(1.5);
+        painter->setPen(p);
+    }
     painter->drawLine(p1,p2);
     painter->drawPolygon(QPolygonF()<<p2<<arrowP1<<arrowP2);
 }
 
 void CusArrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    MsgCenter::getInstance()->notify(key2str(MsgKeys::OpenDlgSetOption),MsgInt(id));
+    if(isCanEditInfo()){
+        MsgCenter::getInstance()->notify(key2str(MsgKeys::OpenDlgSetOption),MsgInt(id));
+    }else{
+        QMessageBox::information(nullptr,"信息","该箭头不能进行编辑！");
+    }
 }
 
 void CusArrow::updateText()
@@ -78,5 +90,18 @@ void CusArrow::updateText()
     QString showTxt;
     showTxt += currOption.remark;
     text->setPlainText(showTxt);
+}
+
+void CusArrow::updateTextItemPos()
+{
+    auto centerPos = (p2+p1) / 2;
+    text->setPos(centerPos);
+}
+
+bool CusArrow::isCanEditInfo()
+{
+    auto stageId = rectA->getId();
+    auto stage = MazeHelper::getInstance()->getStage(stageId);
+    return stage.type == 1;
 }
 
