@@ -42,7 +42,9 @@ enum class MsgKeys
     ConfirmModifyBasicInfo,
     ConfirmOpenMaze,
     ResetNextArrows,
-    DeleteRect
+    DeleteRect,
+    UpdateRectText,
+    UpdateArrowText
 };
 
 std::string key2str(MsgKeys k);

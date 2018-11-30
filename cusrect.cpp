@@ -13,16 +13,22 @@
 CusRect::CusRect(int f,QGraphicsItem *parent)
     :QGraphicsRectItem(QRectF(0,0,100,66),parent),
       id(f),
-      arrows()
+      arrows(),
+      text(new QGraphicsTextItem(this))
 {
+    text->setDefaultTextColor(Qt::black);  // 文本色
+
     setZValue(10);
     //    setFlag(QGraphicsItem::ItemIsMovable,true);
     setAcceptDrops(true);
     setBrush(QBrush(QColor::fromRgb(0,160,230)));
+    updateText();
 }
 
 CusRect::~CusRect()
 {
+    MsgCenter::getInstance()->detach(key2str(MsgKeys::UpdateRectText));
+    delete text;
 }
 
 QPointF CusRect::getCenterPos()const
@@ -123,4 +129,14 @@ void CusRect::updateRectPosData()
     auto stage = MazeHelper::getInstance()->getStage(id);
     stage.pos = pos().toPoint();
     MazeHelper::getInstance()->setStage(stage);
+}
+
+void CusRect::updateText()
+{
+    auto stageId = getId();
+    const auto &currMaze = MazeHelper::getInstance()->getCurrMaze();
+    QString showTxt;
+    showTxt = "ID: " + QString::number(stageId) + "\n";
+    showTxt +=currMaze.stages[stageId].remark;
+    text->setPlainText(showTxt);
 }

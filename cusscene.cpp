@@ -17,12 +17,20 @@ CusScene::CusScene(QObject *parent )
     MsgCenter::getInstance()->attach(key2str(MsgKeys::DeleteRect), [&](const std::string &key, const BaseMsg &msg) {
         this->acceptNotify(key,msg);
     });
+    MsgCenter::getInstance()->attach(key2str(MsgKeys::UpdateRectText), [&](const std::string &key, const BaseMsg &msg) {
+        this->acceptNotify(key,msg);
+    });
+    MsgCenter::getInstance()->attach(key2str(MsgKeys::UpdateArrowText), [&](const std::string &key, const BaseMsg &msg) {
+        this->acceptNotify(key,msg);
+    });
 }
 
 CusScene::~CusScene()
 {
     MsgCenter::getInstance()->detach(key2str(MsgKeys::ResetNextArrows));
     MsgCenter::getInstance()->detach(key2str(MsgKeys::DeleteRect));
+    MsgCenter::getInstance()->detach(key2str(MsgKeys::UpdateRectText));
+    MsgCenter::getInstance()->detach(key2str(MsgKeys::UpdateArrowText));
 }
 
 void CusScene::acceptNotify(const std::string &key, const BaseMsg &msg)
@@ -58,6 +66,12 @@ void CusScene::acceptNotify(const std::string &key, const BaseMsg &msg)
     }else if(key == key2str(MsgKeys::DeleteRect)){
         const auto &data = static_cast<const MsgInt&>(msg);
         delRect(data.number);
+    } else if(key == key2str(MsgKeys::UpdateRectText)){
+        const auto &data = static_cast<const MsgInt&>(msg);
+        allRects[data.number]->updateText();
+    } else if(key == key2str(MsgKeys::UpdateArrowText)){
+        const auto &data = static_cast<const MsgInt&>(msg);
+        allArrows[data.number]->updateText();
     }
 }
 

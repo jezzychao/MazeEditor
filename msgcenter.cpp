@@ -15,7 +15,10 @@ QMap<MsgKeys, QString> keystr{
     {   MsgKeys::OpenDlgSetStage, "OpenDlgSetStage" },
     {   MsgKeys::DeleteRect, "DeleteRect" },
     {   MsgKeys::ConfirmModifyBasicInfo, "ConfirmModifyBasicInfo" },
-    {   MsgKeys::ConfirmOpenMaze, "ConfirmOpenMaze" }
+    {   MsgKeys::ConfirmOpenMaze, "ConfirmOpenMaze" },
+    {   MsgKeys::UpdateRectText, "UpdateRectText" },
+    {   MsgKeys::UpdateArrowText, "UpdateArrowText" }
+
 };
 }
 

@@ -2,6 +2,7 @@
 #include "cusrect.h"
 #include <QPainter>
 #include "msgcenter.h"
+#include "basejsonhelper.h"
 
 namespace  {
 const double Pi = 3.14159265358979323846264338327950288419717;
@@ -12,10 +13,14 @@ CusArrow::CusArrow(int f,std::shared_ptr<CusRect> start,std::shared_ptr<CusRect>
     :QGraphicsItem(parent),
       id(f),
       rectA(start),
-      rectB(end)
+      rectB(end),
+      text(new QGraphicsTextItem(this))
 {
-        setZValue(0);
+
+    setZValue(0);
     adjust();
+    text->setDefaultTextColor(Qt::black);  // 文本色
+    updateText();
 }
 
 CusArrow::~CusArrow()
@@ -65,5 +70,13 @@ void CusArrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *style,QW
 void CusArrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     MsgCenter::getInstance()->notify(key2str(MsgKeys::OpenDlgSetOption),MsgInt(id));
+}
+
+void CusArrow::updateText()
+{
+    auto currOption = MazeHelper::getInstance()->getOption(getId());
+    QString showTxt;
+    showTxt += currOption.remark;
+    text->setPlainText(showTxt);
 }
 

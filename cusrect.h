@@ -8,8 +8,10 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <memory>
 #include <QDrag>
+#include <QGraphicsTextItem>
 
 class CusArrow;
+class BaseMsg;
 
 class CusRect :public QGraphicsRectItem
 {
@@ -28,6 +30,8 @@ public:
 
     void asExit();
 
+    void updateText();
+
     QVector<std::shared_ptr<CusArrow>> getArrows(){return arrows;}
 
 protected:
@@ -45,6 +49,7 @@ private:
 
     int id;//对应 mazestage 中的id
     QVector<std::shared_ptr<CusArrow>> arrows;//和rect相关联的所有箭头
+    QGraphicsTextItem *text;
 };
 
 #endif // CUSSTAGE_H

@@ -31,6 +31,10 @@ DlgSetStage::~DlgSetStage()
 void DlgSetStage::init(int id)
 {
     stageId = id;
+    if(stageId == MazeHelper::getInstance()->getCurrMaze().beginStageId){
+        ui->pushButton_2->setVisible(false);
+    }
+
     auto stage = MazeHelper::getInstance()->getStage(stageId);
     ui->txt_desc->setText(stage.desc);
     ui->txt_mappindId->setText(QString::number(stage.mappingId));
@@ -138,6 +142,7 @@ void DlgSetStage::on_pushButton_clicked()
         msg.opIdLinkToStageId.insert(addOpIds[i],addLinkIds[i]);
     }
     MsgCenter::getInstance()->notify(key2str(MsgKeys::ResetNextArrows),msg);
+    MsgCenter::getInstance()->notify(key2str(MsgKeys::UpdateRectText),MsgInt(stageId));
 
     MazeHelper::getInstance()->save();
     close();

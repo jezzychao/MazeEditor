@@ -1,6 +1,7 @@
 #include "dlgsetoption.h"
 #include "ui_dlgsetoption.h"
 #include "basejsonhelper.h"
+#include "msgcenter.h"
 
 DlgSetOption::DlgSetOption(QWidget *parent) :
     QDialog(parent),
@@ -19,7 +20,6 @@ void DlgSetOption::init(int optionId)
 {
     qDebug("open dlgsetoption id: %d",optionId);
     currOptionId = optionId;
-    const auto &maze = MazeHelper::getInstance()->getCurrMaze();
     auto option = MazeHelper::getInstance()->getOption(optionId);
     ui->cebox->setCheckState(option.isonlyonce?Qt::CheckState::Checked:Qt::CheckState::Unchecked);
     ui->txt_remark->setText(option.remark);
@@ -50,6 +50,7 @@ void DlgSetOption::on_pushButton_clicked()
     MazeHelper::getInstance()->setOption(option);
     MazeHelper::getInstance()->save();
     close();
+    MsgCenter::getInstance()->notify(key2str(MsgKeys::UpdateArrowText),MsgInt(currOptionId));
 }
 
 

@@ -4,6 +4,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsRectItem>
 #include <memory>
+#include <QGraphicsTextItem>
 
 class CusRect;
 
@@ -20,6 +21,8 @@ public:
 
     std::shared_ptr<CusRect> getStartedRect(){return rectA;}
     std::shared_ptr<CusRect> getEndedRect(){return rectB;}
+
+    void updateText();
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void paint(QPainter *, const QStyleOptionGraphicsItem* ,QWidget *) override;
@@ -31,6 +34,7 @@ private:
     QPointF p2;//箭头的终点位置
     std::shared_ptr<CusRect> rectA;//起点的方框
     std::shared_ptr<CusRect> rectB;//终点的方框
+    QGraphicsTextItem *text;
 };
 
 #endif // CUSARROW_H
