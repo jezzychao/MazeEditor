@@ -15,6 +15,7 @@ private:
     bool handlerOption(QJsonObject &json);
     bool handlerStage(QJsonObject &json);
     bool handleMaze(QJsonObject &json);
+    QString backupPath;
     QString publishPath;
     QString filePath;
 };

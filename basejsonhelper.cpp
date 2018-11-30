@@ -61,7 +61,7 @@ bool BaseJSONHelper::save()
 //---------------------------------------------------------------------------------------------------------------------------
 
 MazeHelper::MazeHelper()
-    :BaseJSONHelper ("maze_data"),currId(0)
+    :BaseJSONHelper ("maze_data_editor"),currId(0)
 {
 
 }

@@ -265,9 +265,15 @@ void DlgSetStage::initForPlayerFight()
 ///@brief 剧情i、备注和类型选择除外
 void DlgSetStage::disabledAllInput()
 {
+    ui->txt_name->clear();
     ui->txt_name->setEnabled(false);
+    ui->txt_desc->clear();
     ui->txt_desc->setEnabled(false);
+    ui->txt_sprite->clear();
     ui->txt_sprite->setEnabled(false);
+    ui->cbx_link_1->setCurrentIndex(0);
+    ui->cbx_link_2->setCurrentIndex(0);
+    ui->cbx_link_3->setCurrentIndex(0);
     ui->cbx_link_1->setEnabled(false);
     ui->cbx_link_2->setEnabled(false);
     ui->cbx_link_3->setEnabled(false);
@@ -276,4 +282,7 @@ void DlgSetStage::disabledAllInput()
     ui->lab_link_3->clear();
     ui->lab_mappingId->clear();
     ui->txt_mappindId->setEnabled(false);
+    ui->txt_mappindId->clear();
+    ui->txt_storyId->clear();
+    ui->txt_remark->clear();
 }

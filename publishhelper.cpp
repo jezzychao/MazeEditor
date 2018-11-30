@@ -5,8 +5,9 @@
 #include <QJsonDocument>
 
 PublishHelper::PublishHelper()
-    :publishPath(myfunc::getPublishPath() + "/maze_data.json"),
-      filePath(myfunc::getRunPath()+ "/maze_data.json" )
+    :backupPath(myfunc::getRunPath()+ "/maze_data.json"),
+      publishPath(myfunc::getPublishPath() + "/maze_data.json"),
+      filePath(myfunc::getRunPath()+ "/maze_data_editor.json" )
 {
 }
 
@@ -52,6 +53,12 @@ bool PublishHelper::save(const QJsonObject &json)
     }
     QJsonDocument saveDoc(json);
     saveFile.write(saveDoc.toJson());
+
+    QFile copyFile(backupPath);
+    if(copyFile.exists()){
+       copyFile.remove();
+    }
+    saveFile.copy(backupPath);
     qDebug("save json successfully!!!");
     return true;
 }
