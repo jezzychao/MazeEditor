@@ -9,7 +9,8 @@ DlgSetStage::DlgSetStage(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DlgSetStage),
     stageId(0),
-    allStageIds({-2})//第一个数表示空，用-2来标记
+    allStageIds({-2}),//第一个数表示空，用-2来标记
+    linkIdxs()
 {
     ui->setupUi(this);
     QStringList qls {
@@ -23,6 +24,7 @@ DlgSetStage::DlgSetStage(QWidget *parent) :
     };
     ui->cbx_type->addItems(qls);
     connect(ui->cbx_type,SIGNAL(currentIndexChanged(int)), this, SLOT(on_typeCombox_indexChanged(int)));
+    on_typeCombox_indexChanged(0);
 }
 
 DlgSetStage::~DlgSetStage()
@@ -32,21 +34,11 @@ DlgSetStage::~DlgSetStage()
 
 void DlgSetStage::init(int id)
 {
-    on_typeCombox_indexChanged(0);
     stageId = id;
-
     if(stageId == MazeHelper::getInstance()->getCurrMaze().beginStageId){
         ui->pushButton_2->setVisible(false);
     }
-
     auto stage = MazeHelper::getInstance()->getStage(stageId);
-    ui->txt_desc->setText(stage.desc);
-    ui->txt_mappindId->setText(QString::number(stage.mappingId));
-    ui->txt_name->setText(stage.name);
-    ui->txt_sprite->setText(stage.sprite);
-    ui->txt_storyId->setText(QString::number(stage.entryStoryId));
-    ui->txt_remark->setText(stage.remark);
-    ui->cbx_type->setCurrentIndex(stage.type > 0? stage.type - 1 :0);
 
     //读取连接选项
     QVector<decltype(ui->cbx_link_1)> cbxs({ui->cbx_link_1,ui->cbx_link_2,ui->cbx_link_3});
@@ -57,15 +49,30 @@ void DlgSetStage::init(int id)
         allStageIds.push_back(it.key());
         qsl.push_back(QString(QString::number(it.key()) + ":" + it.value()));
     }
-
-    QVector<int> linkIdxs;
     for(auto nextId: stage.nextStageIds){
         auto idx = allStageIds.indexOf(nextId);
         linkIdxs.push_back(idx);
     }
-
     for(auto it = cbxs.cbegin();it != cbxs.cend();++it){
         (*it)->addItems(qsl);
+    }
+
+    ui->cbx_type->setCurrentIndex(stage.type > 0? stage.type - 1 :0);
+    updateDisplay();
+}
+
+void DlgSetStage::updateDisplay()
+{
+    auto stage = MazeHelper::getInstance()->getStage(stageId);
+    ui->txt_desc->setText(stage.desc);
+    ui->txt_mappindId->setText(QString::number(stage.mappingId));
+    ui->txt_name->setText(stage.name);
+    ui->txt_sprite->setText(stage.sprite);
+    ui->txt_storyId->setText(QString::number(stage.entryStoryId));
+    ui->txt_remark->setText(stage.remark);
+
+    QVector<decltype(ui->cbx_link_1)> cbxs({ui->cbx_link_1,ui->cbx_link_2,ui->cbx_link_3});
+    for(auto it = cbxs.cbegin();it != cbxs.cend();++it){
         auto setIdx = it-cbxs.cbegin() < linkIdxs.size()? linkIdxs[it-cbxs.cbegin()]:0;
         (*it)->setCurrentIndex(setIdx);
     }
@@ -81,6 +88,10 @@ void DlgSetStage::on_typeCombox_indexChanged(int index){
     case 4:  initForMinigame();break;
     case 5:  initForUploading();break;
     case 6:  initForPlayerFight();break;
+    }
+    auto stage = MazeHelper::getInstance()->getStage(stageId);
+    if(stage.type -1 == index){
+        updateDisplay();
     }
 }
 

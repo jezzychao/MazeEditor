@@ -44,7 +44,8 @@ SOURCES += \
     cusview.cpp \
     dlgsetoption.cpp \
     dlgconfirm.cpp \
-    publishhelper.cpp
+    publishhelper.cpp \
+    dlgruntest.cpp
 
 HEADERS += \
         mazeeditor.h \
@@ -65,7 +66,8 @@ HEADERS += \
     cusview.h \
     dlgsetoption.h \
     dlgconfirm.h \
-    publishhelper.h
+    publishhelper.h \
+    dlgruntest.h
 
 FORMS += \
         mazeeditor.ui \
@@ -74,7 +76,8 @@ FORMS += \
     dlgopenmaze.ui \
     dlgsetstage.ui \
     dlgsetoption.ui \
-    dlgconfirm.ui
+    dlgconfirm.ui \
+    dlgruntest.ui
 
 QT += axcontainer
 

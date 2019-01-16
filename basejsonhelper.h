@@ -35,6 +35,7 @@ struct MazeOption
     int linkStageId = -1;//如果是出口，该值为0
     QVector<int> events;
     bool isonlyonce = false;
+    QStringList attrsChanged;
 
     QString remark;
 };
@@ -97,11 +98,18 @@ public:
     ///@brief 检测mazeid,potid,name的修改,是否有效
     std::tuple<bool,QString> modifyIsValid(int , const MazeData &);
 
+    std::tuple<bool,QString> checkStageIsValid(const MazeStage &);
+
+    std::tuple<bool,QString> checkOptionIsValid(int, const MazeOption &);
+
     MazeData copyCurrMaze()const ;
 
     ///@brief 获取所有stage的名称和id
     QMap<int,QString> getStageInfos(std::initializer_list<int> excludeIds = {})const;
     const MazeData &getCurrMaze()const;
+    std::shared_ptr<MazeData>  getSpMaze(){
+        return m_maze[currId];
+    }
     bool setCurrMaze(const MazeData &);
     bool setCurrMaze(int);
     bool isAlreadyExist();

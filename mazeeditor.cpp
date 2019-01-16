@@ -10,6 +10,8 @@
 #include "dlgsetoption.h"
 #include "publishhelper.h"
 #include "dlgconfirm.h"
+#include "dlgsetstage.h"
+#include "dlgruntest.h"
 
 bool isCanUseTopBtn()
 {
@@ -33,6 +35,9 @@ mazeeditor::mazeeditor(QWidget *parent) :
     MsgCenter::getInstance()->attach(key2str(MsgKeys::OpenDlgSetOption), [&](const std::string &key, const BaseMsg &msg) {
         this->acceptNotify(key,msg);
     });
+    MsgCenter::getInstance()->attach(key2str(MsgKeys::OpenDlgSetStage), [&](const std::string &key, const BaseMsg &msg) {
+        this->acceptNotify(key,msg);
+    });
 }
 
 mazeeditor::~mazeeditor()
@@ -40,6 +45,7 @@ mazeeditor::~mazeeditor()
     MsgCenter::getInstance()->detach(key2str(MsgKeys::OpenDlgSetOption));
     MsgCenter::getInstance()->detach(key2str(MsgKeys::ConfirmOpenMaze));
     MsgCenter::getInstance()->detach(key2str(MsgKeys::ConfirmModifyBasicInfo));
+     MsgCenter::getInstance()->detach(key2str(MsgKeys::OpenDlgSetStage));
     delete ui;
 }
 
@@ -59,6 +65,11 @@ void mazeeditor::acceptNotify(const std::string &key, const BaseMsg &msg)
     }else if(key == key2str(MsgKeys::OpenDlgSetOption)){
         const auto &m = static_cast<const MsgInt&>(msg);
         DlgSetOption *dlg = new DlgSetOption(this);
+        dlg->init(m.number);
+        dlg->exec();
+    }else if(key == key2str(MsgKeys::OpenDlgSetStage)){
+        const auto &m = static_cast<const MsgInt&>(msg);
+        DlgSetStage *dlg= new  DlgSetStage(this);
         dlg->init(m.number);
         dlg->exec();
     }
@@ -100,7 +111,13 @@ void mazeeditor::on_btn_save_clicked()
 void mazeeditor::on_btn_publish_clicked()
 {
     PublishHelper helper;
-    helper.exe();
+    if( helper.exe()){
+        DlgConfirm *dlg = new DlgConfirm("发布数据成功",this);
+        dlg->exec();
+    }else{
+        DlgConfirm *dlg = new DlgConfirm("发布数据失败！！！",this);
+        dlg->exec();
+    }
 }
 
 void mazeeditor::on_bnt_del_clicked()
@@ -120,4 +137,15 @@ void mazeeditor::on_bnt_del_clicked()
          ui->graphicsView->clear();
          ui->graphicsView->setEnabled(false);
     }
+}
+
+void mazeeditor::on_pushButton_clicked()
+{
+    if(!isCanUseTopBtn()){
+        QMessageBox::information(this, tr("信息"), tr("没有打开的迷宫"));
+        qWarning("btn_save is invalid!!!");
+        return;
+    }
+    DlgRunTest *pdlg = new DlgRunTest(MazeHelper::getInstance()->getSpMaze(),this);
+    pdlg->show();
 }

@@ -37,11 +37,19 @@ bool ExcelBase::open(const QString &_filename)
     }
     sp_books->dynamicCall("Open(const QString&)", filename);
     sp_book = sp_excel->querySubObject("ActiveWorkBook");
-    sp_sheet = sp_book->querySubObject("WorkSheets(int)",1);
     if(iscreated){
         saveAs(filename);
     }
     return iscreated;
+}
+
+bool ExcelBase::setSheet(int index)
+{
+    if(sp_book != nullptr && !sp_book->isNull()){
+        sp_sheet = sp_book->querySubObject("WorkSheets(int)",index);
+        return true;
+    }
+    return false;
 }
 
 QVariant ExcelBase::read(int row, int col)

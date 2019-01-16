@@ -255,6 +255,13 @@ void MazeHelper::readOption(MazeOption &option,const QJsonObject &json)const
     option.isonlyonce = json["isonlyonce"].toInt();
     option.remark = json["remark"].toString();
 
+    decltype (option.attrsChanged) tempAttr;
+    auto attrArray = json["attrsChanged"].toArray();
+    for(auto v :attrArray){
+        tempAttr.push_back(v.toString());
+    }
+    option.attrsChanged = tempAttr;
+
     decltype (option.events) temp;
     auto jsarr = json["events"].toArray();
     for(auto v :jsarr){
@@ -272,6 +279,12 @@ void MazeHelper::writeOption(const MazeOption &option,QJsonObject &json)
     json["linkStageId"] = option.linkStageId;
     json["isonlyonce"] = option.isonlyonce;
     json["remark"] = option.remark;
+
+    QJsonArray attrArr;
+    for(auto v :option.attrsChanged){
+        attrArr.push_back(v);
+    }
+    json["attrsChanged"] = attrArr;
 
     QJsonArray arr;
     for(auto v :option.events){
@@ -532,13 +545,76 @@ MazeOption MazeHelper::getOption(int optionId)
     qFatal("Do not exist optionId: %d in maze: %d",optionId,currMaze->id);
 }
 
- void MazeHelper::deleteMaze(int mazeId)
- {
-     if(currId == 0){
-         qFatal("Have not opened maze");
-     }
-     auto it = m_maze.find(mazeId);
-     if(it != m_maze.end()){
-         m_maze.erase(it);
-     }
- }
+void MazeHelper::deleteMaze(int mazeId)
+{
+    if(currId == 0){
+        qFatal("Have not opened maze");
+    }
+    auto it = m_maze.find(mazeId);
+    if(it != m_maze.end()){
+        m_maze.erase(it);
+    }
+}
+
+std::tuple<bool,QString> MazeHelper::checkStageIsValid(const MazeStage &stage)
+{
+    bool status = false;
+    QString errmsg;
+    if(stage.type == 1|| stage.type == 6 || stage.type == 7)
+    {
+        if(stage.name.isEmpty()){
+            errmsg += ("没有配置名称\n");
+        }
+        if(stage.sprite.isEmpty()){
+            errmsg += ("没有配置图片\n");
+        }
+        if(stage.desc.isEmpty()){
+            errmsg += ("没有配置描述\n ");
+        }
+    }
+    else if(stage.type == 2 || stage.type == 3 || stage.type == 4){
+        if(stage.mappingId == 0){
+             errmsg += ("该 stage 类型没有关联 stage.xlsx 中的 id\n");
+        }
+    }
+    else if(stage.type == 5){
+        if(stage.mappingId == 0){
+             errmsg += ("该 stage 类型没有关联 minigames.xlsx 中的 id\n");
+        }
+    }
+    else
+    {
+        errmsg = "当前 Stage 的类型配置错误: type: " + QString::number(stage.type) + "\n";
+    }
+
+    if(stage.options.size() == 0){
+        errmsg += ("没有配置任何选项信");
+    }else{
+        for(auto it = stage.options.cbegin();it != stage.options.cend();++it){
+            auto result = checkOptionIsValid(stage.type,it.value());
+            if(!std::get<1>(result).isEmpty()){
+                errmsg.append("\n").append(std::get<1>(result));
+            }
+        }
+    }
+    status = errmsg.isEmpty()? true :false;
+
+    return std::make_tuple(status, errmsg);
+}
+
+std::tuple<bool,QString> MazeHelper::checkOptionIsValid(int stageType ,const MazeOption &option)
+{
+    bool status = false;
+    QString errmsg;
+    if(option.linkStageId == -1){
+        errmsg +=("optionId: " +QString::number(option.id) + ", 没有后置的stageId\n");
+    }
+    if(stageType == 1){
+        if(option.text.isEmpty()){
+            errmsg +=("没有对应的选项文本\n");
+        }
+    }
+     status = errmsg.isEmpty()? true :false;
+
+    return std::make_tuple(status, errmsg);
+}

@@ -68,7 +68,7 @@ void CusScene::acceptNotify(const std::string &key, const BaseMsg &msg)
         delRect(data.number);
     } else if(key == key2str(MsgKeys::UpdateRectText)){
         const auto &data = static_cast<const MsgInt&>(msg);
-        allRects[data.number]->updateText();
+        allRects[data.number]->updateDisplay();
     } else if(key == key2str(MsgKeys::UpdateArrowText)){
         const auto &data = static_cast<const MsgInt&>(msg);
         allArrows[data.number]->updateText();

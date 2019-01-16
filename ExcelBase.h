@@ -13,7 +13,11 @@ public:
     ExcelBase(const ExcelBase &) = delete;
     ExcelBase &operator=(const ExcelBase &) = delete;
     virtual ~ExcelBase();
+    bool setSheet(int index);//index 从1开始
+    QAxObject * getSheet(){return sp_sheet;}
 protected:
+
+
     bool exists() const;
 
     /// @brief 打开一个Microsoft Excel文件，不存在则会创建一个
@@ -26,8 +30,6 @@ protected:
 
     /// @brief 关闭Microsoft Excel文件
     void close();
-
-
 
     QString getFullPath()const{return filename;}
 

@@ -2,11 +2,15 @@
 #define PUBLISHHELPER_H
 
 #include <QJsonObject>
+#include <QStringList>
+
+class Exlocalization;
 
 class PublishHelper
 {
 public:
     PublishHelper();
+    ~PublishHelper();
     bool exe();
 private:
     bool load(QJsonObject &json);
@@ -18,6 +22,9 @@ private:
     QString backupPath;
     QString publishPath;
     QString filePath;
+    Exlocalization *excel;
+    ///@brief 已经被使用的多语言ID
+    QStringList *usedIds;
 };
 
 #endif // PUBLISHHELPER_H

@@ -30,7 +30,7 @@ public:
 
     void asExit();
 
-    void updateText();
+    void updateDisplay();
 
     QVector<std::shared_ptr<CusArrow>> getArrows(){return arrows;}
 

@@ -33,6 +33,8 @@ private slots:
 
     void on_bnt_del_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     void acceptNotify(const std::string &, const BaseMsg &);
 

@@ -45,12 +45,15 @@ private:
 
     void disabledAllInput();
 
+    void updateDisplay();
+
     ///@brief 检测后置路径是否重复
     std::tuple<bool,QString> checkForDuplication();
 
     Ui::DlgSetStage *ui;
     int stageId;
     QVector<int> allStageIds;
+    QVector<int> linkIdxs;
 };
 
 #endif // DLGSETSTAGE_H

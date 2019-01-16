@@ -63,6 +63,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>测试</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btn_publish">
           <property name="text">
            <string>发布至result</string>

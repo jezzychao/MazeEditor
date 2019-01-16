@@ -8,8 +8,11 @@ QMap<EXCEL_FILES, QString> FileMap{
     {EXCEL_FILES::pot, "pot"},
     {EXCEL_FILES::mazeStage, "mazeStage"},
     {EXCEL_FILES::mazeOption, "mazeOption"},
-    {EXCEL_FILES::item, "item"}
+    {EXCEL_FILES::item, "item"},
+    {EXCEL_FILES::localization, "localization"}
 };
+
+int localizationStartId = 0;
 }
 
 ExcelRes::ExcelRes()
@@ -23,6 +26,7 @@ bool ExcelRes::openExcel(EXCEL_FILES file)
     QString relative = myfunc::getExcelFilesPath();
     QString fullPath = relative + "/" +  FileMap[file] + ".xlsx";
     if(ExcelBase::open(fullPath)){
+        ExcelBase::setSheet(1);
         initFields();
     }
     return true;
@@ -80,6 +84,7 @@ bool ExcelRes::set(int id, ExcelData *pdata)
 
 bool ExcelRes::saveExcel()
 {
+    clearAll();
     int row = 3;
     for(auto it = m_map.cbegin();it != m_map.cend();++it){
         auto list = toExcel(*( it.value()));
@@ -174,9 +179,9 @@ QVector<Item> ExItem::getValidTickets()
         for(auto it = container.cbegin();it != container.cend();++it){
             auto &item = static_cast<Item&>(*(it.value()));
             vec.append(item);
-//            if(item.type == 1 || item.type == 2 || item.type == 4){
-//                vec.append(item);
-//            }
+            //            if(item.type == 1 || item.type == 2 || item.type == 4){
+            //                vec.append(item);
+            //            }
         }
     }
     return vec;
@@ -225,4 +230,129 @@ std::tuple<int,std::shared_ptr<ExcelData>>ExPot::toObject(const QList<QVariant>&
         }
     }
     return std::make_tuple(option.id, std::shared_ptr<ExcelData>(new Pot(option)));
+}
+
+
+QList<QVariant> Exlocalization::toExcel(const ExcelData &data)
+{
+    auto &option = static_cast<const Localization&>(data);
+    QList<QVariant> list({
+                             QVariant(option.id),
+                             QVariant(option.cn),
+                             QVariant(option.en),
+                             QVariant(option.tw)
+                         });
+    return list;
+}
+
+std::tuple<int,std::shared_ptr<ExcelData>> Exlocalization::toObject(const QList<QVariant>&list)
+{
+    Localization option;
+    for(auto it = list.cbegin(); it !=  list.cend();++it){
+        auto col = it -  list.cbegin() + 1;
+        switch (col) {
+        case 1:  option.id = it->toString() ; break;
+        case 2:  option.cn = it->toString() ; break;
+        case 3:  option.en = it->toString() ; break;
+        case 4:  option.tw = it->toString() ; break;
+        }
+    }
+    return std::make_tuple(localizationStartId++, std::shared_ptr<ExcelData>(new Localization(option)));
+}
+
+bool  Exlocalization::insert(const Localization &local)
+{
+    auto result = isAlreadyExist(local);
+    if(!std::get<0>(result)){
+        auto &container = getContainer();
+        container.insert(localizationStartId++, std::shared_ptr<ExcelData>(new Localization(local)));
+        return true;
+    }
+    return false;
+}
+
+bool  Exlocalization::erase(const Localization &local)
+{
+    auto result = isAlreadyExist(local);
+    if(std::get<0>(result)){
+        auto &container = getContainer();
+        container.erase(std::get<1>(result));
+        return true;
+    }
+    return false;
+}
+
+QString Exlocalization::getId(const QString &cn)
+{
+    Localization local;
+    local.cn = cn;
+    auto result = isAlreadyExist(local);
+    if(!std::get<0>(result)){
+        auto &container = getContainer();
+        local.id = genNewId();
+        container.insert(localizationStartId++, std::shared_ptr<ExcelData>(new Localization(local)));
+        return local.id;
+    }else{
+        auto it = std::get<1>(result);
+        const auto &data = static_cast<const Localization&>((*it.value()));
+        return data.id;
+    }
+}
+
+std::tuple<bool,QMap<int,std::shared_ptr<ExcelData>>::iterator> Exlocalization::isAlreadyExist(const Localization &local)
+{
+    auto &container = getContainer();
+    for(auto it = container.begin(); it != container.end();++it){
+        const auto &data = static_cast<const Localization&>((*it.value()));
+        if(data.cn == local.cn){
+            return std::make_tuple(true, it);
+        }
+    }
+    return std::make_tuple(false, container.end());
+}
+
+QString Exlocalization::genNewId()
+{
+    int maxId = -1;
+    auto &container = getContainer();
+    for(auto it = container.cbegin();it != container.cend();++it){
+        const auto &data = static_cast<const Localization&>((*it.value()));
+        if(data.id.startsWith("maze_auto_")){
+            auto id = data.id.split("_")[2].toInt();
+            if(id > maxId){
+                maxId = id;
+            }
+        }
+    }
+    return "maze_auto_" + QString::number(++maxId);
+}
+
+void Exlocalization::removeUnused(const QStringList &usedIds)
+{
+    QVector<int> delKeys;
+    auto &container = getContainer();
+    for(auto it = container.cbegin(); it != container.cend();++it){
+        const auto &data = static_cast<const Localization&>((*it.value()));
+        if(data.id.startsWith("maze_auto_") && usedIds.indexOf(data.id) == -1){
+            delKeys.push_back(it.key());
+        }
+    }
+    for(auto &delkey: delKeys){
+        container.remove(delkey);
+    }
+}
+
+void Exlocalization::clearAll()
+{
+    auto sp_sheet = getSheet();
+    QAxObject *usedRange = sp_sheet->querySubObject("UsedRange");
+    int topRow = usedRange->property("Row").toInt();
+    QAxObject *rows = usedRange->querySubObject("Rows");
+    int bottomRow = topRow + rows->property("Count").toInt() - 1;
+   delete usedRange;
+
+    QString srange("A4:D" + QString::number(bottomRow));
+    QAxObject *range = sp_sheet->querySubObject("Range(const QString&)", srange);
+    range->dynamicCall("ClearContents()");
+    delete range;
 }

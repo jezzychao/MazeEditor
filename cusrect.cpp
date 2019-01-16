@@ -10,6 +10,18 @@
 #include "dlgsetstage.h"
 #include <QMessageBox>
 
+namespace  {
+const QMap<int,decltype (Qt::black)> type2color({
+                                                    {1,Qt::darkYellow},
+                                                    {2, Qt::yellow},
+                                                    {3, Qt::cyan},
+                                                    {4, Qt::magenta},
+                                                    {5, Qt::darkRed},
+                                                    {6, Qt::darkCyan},
+                                                    {7, Qt::darkMagenta},
+                                                });
+}
+
 CusRect::CusRect(int f,QGraphicsItem *parent)
     :QGraphicsRectItem(QRectF(0,0,100,66),parent),
       id(f),
@@ -22,7 +34,7 @@ CusRect::CusRect(int f,QGraphicsItem *parent)
     //    setFlag(QGraphicsItem::ItemIsMovable,true);
     setAcceptDrops(true);
     setBrush(QBrush(QColor::fromRgb(0,160,230)));
-    updateText();
+    updateDisplay();
 }
 
 CusRect::~CusRect()
@@ -76,9 +88,10 @@ void CusRect::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
         QMessageBox::information(nullptr,QString("警告"),QString("不可对出口标记进行编辑"));
         return;
     }
-    DlgSetStage *dlg = new DlgSetStage();
-    dlg->init(id);
-    dlg->show();
+    MsgCenter::getInstance()->notify(key2str(MsgKeys::OpenDlgSetStage), MsgInt(id));
+    //    DlgSetStage *dlg = new DlgSetStage();
+    //    dlg->init(id);
+    //    dlg->show();
 }
 
 void CusRect::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
@@ -131,7 +144,7 @@ void CusRect::updateRectPosData()
     MazeHelper::getInstance()->setStage(stage);
 }
 
-void CusRect::updateText()
+void CusRect::updateDisplay()
 {
     auto stageId = getId();
     const auto &currMaze = MazeHelper::getInstance()->getCurrMaze();
@@ -139,4 +152,7 @@ void CusRect::updateText()
     showTxt = "ID: " + QString::number(stageId) + "\n";
     showTxt +=currMaze.stages[stageId].remark;
     text->setPlainText(showTxt);
+    if(currMaze.beginStageId != stageId && currMaze.endStageId != stageId){
+        setBrush(QBrush(type2color[currMaze.stages[stageId].type]));
+    }
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>454</width>
-    <height>399</height>
+    <width>753</width>
+    <height>436</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>350</y>
+     <x>320</x>
+     <y>380</y>
      <width>80</width>
      <height>31</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>80</y>
+     <x>70</x>
+     <y>100</y>
      <width>81</width>
      <height>21</height>
     </rect>
@@ -39,15 +39,15 @@
     <string>选项文本：</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>130</y>
-     <width>181</width>
+     <x>70</x>
+     <y>170</y>
+     <width>211</width>
      <height>21</height>
     </rect>
    </property>
@@ -55,14 +55,14 @@
     <string>激活的条件（和配置表中一样填写）</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>180</y>
+     <x>70</x>
+     <y>240</y>
      <width>151</width>
      <height>21</height>
     </rect>
@@ -71,14 +71,14 @@
     <string>未激活时，点击出现提示</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>230</y>
+     <x>400</x>
+     <y>30</y>
      <width>111</width>
      <height>21</height>
     </rect>
@@ -87,13 +87,13 @@
     <string>抛出的事件列表</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>70</x>
      <y>30</y>
      <width>121</width>
      <height>21</height>
@@ -103,15 +103,15 @@
     <string>编辑器中显示的名称</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QTextEdit" name="txt_remark">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>30</y>
-     <width>231</width>
+     <x>70</x>
+     <y>60</y>
+     <width>291</width>
      <height>31</height>
     </rect>
    </property>
@@ -119,9 +119,9 @@
   <widget class="QTextEdit" name="txt_text">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>80</y>
-     <width>231</width>
+     <x>70</x>
+     <y>130</y>
+     <width>291</width>
      <height>31</height>
     </rect>
    </property>
@@ -129,9 +129,9 @@
   <widget class="QTextEdit" name="txt_cond">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>130</y>
-     <width>231</width>
+     <x>70</x>
+     <y>200</y>
+     <width>291</width>
      <height>31</height>
     </rect>
    </property>
@@ -139,9 +139,9 @@
   <widget class="QTextEdit" name="txt_tips">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>180</y>
-     <width>231</width>
+     <x>70</x>
+     <y>270</y>
+     <width>291</width>
      <height>31</height>
     </rect>
    </property>
@@ -149,9 +149,9 @@
   <widget class="QTextEdit" name="txt_events">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>230</y>
-     <width>231</width>
+     <x>400</x>
+     <y>70</y>
+     <width>311</width>
      <height>31</height>
     </rect>
    </property>
@@ -159,9 +159,9 @@
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>260</y>
-     <width>371</width>
+     <x>400</x>
+     <y>50</y>
+     <width>251</width>
      <height>16</height>
     </rect>
    </property>
@@ -169,14 +169,14 @@
     <string>多个事件ID以英文分号分割</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QCheckBox" name="cebox">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>280</y>
+     <x>70</x>
+     <y>310</y>
      <width>121</width>
      <height>41</height>
     </rect>
@@ -199,6 +199,230 @@
    <property name="tristate">
     <bool>false</bool>
    </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>110</y>
+     <width>171</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>选择之后触发的属性变化</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>140</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>作用的角色</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>600</x>
+     <y>140</y>
+     <width>51</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>属性</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>140</y>
+     <width>51</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>变化值</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QWidget" name="attrs" native="true">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>120</y>
+     <width>331</width>
+     <height>251</height>
+    </rect>
+   </property>
+   <widget class="QComboBox" name="cmb_attr_2">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>90</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_delta_2">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>90</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_delta_5">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>210</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_role_1">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_delta_1">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>50</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_role_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cmb_attr_4">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>170</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cmb_attr_3">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>130</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cmb_attr_1">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>50</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_delta_3">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>130</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_role_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>210</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cmb_attr_5">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>210</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_role_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_delta_4">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>170</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="txt_role_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
