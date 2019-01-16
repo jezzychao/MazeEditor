@@ -91,6 +91,7 @@ void MazeHelper::read(const QJsonObject &json)
             MazeData data;
             data.potId = mazeJson["potId"].toInt();
             data.name =  mazeJson["name"].toString();
+            data.bgi = mazeJson["bgi"].toString();
             data.id = mazeJson["id"].toInt();
             data.beginStageId = mazeJson["beginStageId"].toInt();
             data.endStageId = mazeJson["endStageId"].toInt();
@@ -134,6 +135,7 @@ void MazeHelper::write(QJsonObject &json)
         mazeJson["id"] = maze->id;
         mazeJson["name"] = maze->name;
         mazeJson["potId"] = maze->potId;
+        mazeJson["bgi"] = maze->bgi;
         mazeJson["beginStageId"] =maze->beginStageId;
         mazeJson["endStageId"] = maze->endStageId;
         QJsonObject tickets;

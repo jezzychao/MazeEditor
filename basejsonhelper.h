@@ -67,6 +67,8 @@ struct MazeData{
     QString name = "";
     ///@brief 迷宫所在的怕potid
     int potId = 0;
+    ///背景图片
+    QString bgi;
     /// 没有使用
     int beginStageId = 0;
     /// 没有使用

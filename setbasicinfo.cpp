@@ -61,6 +61,7 @@ void SetBasicInfo::initForNew()
     ui->textEdit_id->setText("");
     ui->textEdit_name->setText("");
     ui->textEdit_potid->setText("");
+    ui->textEdit_bgi->setText("");
 }
 
 void SetBasicInfo::initForSet()
@@ -108,6 +109,7 @@ void SetBasicInfo::initForSet()
     ui->textEdit_id->setText(QString::number(mazeData.id));
     ui->textEdit_name->setText(mazeData.name);
     ui->textEdit_potid->setText(QString::number(mazeData.potId));
+    ui->textEdit_bgi->setText((mazeData.bgi));
 }
 
 void SetBasicInfo::acceptNotify(const std::string &key, const BaseMsg &msg)
@@ -143,6 +145,12 @@ void SetBasicInfo::on_btn_ok_clicked()
     {
         //potid是空
         tips.append("输入的迷宫所在potId是空的");
+    }
+
+    auto qsBgi = ui->textEdit_bgi->toPlainText();
+    if (qsBgi.isEmpty())
+    {
+        tips.append("输入的背景是空的");
     }
 
     //打开提示界面
@@ -184,6 +192,7 @@ void SetBasicInfo::on_btn_ok_clicked()
     maze.potId = qsPotId.toInt();
     maze.name = qsName;
     maze.tickets = tepTickets;
+    maze.bgi = qsBgi;
     if(isCreateNew){
         auto result = MazeHelper::getInstance()->checkIsValid(maze);
         if(!std::get<0>(result)){
