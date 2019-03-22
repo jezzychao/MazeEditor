@@ -92,6 +92,7 @@ void MazeHelper::read(const QJsonObject &json)
             data.potId = mazeJson["potId"].toInt();
             data.name =  mazeJson["name"].toString();
             data.bgi = mazeJson["bgi"].toString();
+             data.bgm = mazeJson["bgm"].toString();
             data.id = mazeJson["id"].toInt();
             data.beginStageId = mazeJson["beginStageId"].toInt();
             data.endStageId = mazeJson["endStageId"].toInt();
@@ -136,6 +137,7 @@ void MazeHelper::write(QJsonObject &json)
         mazeJson["name"] = maze->name;
         mazeJson["potId"] = maze->potId;
         mazeJson["bgi"] = maze->bgi;
+         mazeJson["bgm"] = maze->bgm;
         mazeJson["beginStageId"] =maze->beginStageId;
         mazeJson["endStageId"] = maze->endStageId;
         QJsonObject tickets;
@@ -486,12 +488,12 @@ QMap<int,QString> MazeHelper::getStageInfos(std::initializer_list<int> excludeId
     return ret;
 }
 
-QVector<int> MazeHelper::findFrontStageIds(int stageId)
+QVector<int> MazeHelper::findFrontStageIds(int )
 {
     return {};
 }
 
-QVector<int> MazeHelper::findNextStageIds(int stageId)
+QVector<int> MazeHelper::findNextStageIds(int )
 {
     return {};
 }

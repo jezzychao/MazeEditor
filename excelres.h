@@ -146,6 +146,7 @@ public:
 protected:
     bool initFields() override{
         qFatal("不能对item.xlsx修改字段");
+        return false;
     }
     QList<QVariant> toExcel(const ExcelData &)override{
         qFatal("不能对item.xlsx进行写入操作");

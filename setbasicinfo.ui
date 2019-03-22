@@ -18,7 +18,7 @@
     <rect>
      <x>170</x>
      <y>100</y>
-     <width>371</width>
+     <width>151</width>
      <height>31</height>
     </rect>
    </property>
@@ -36,6 +36,9 @@
    </property>
   </widget>
   <widget class="QLabel" name="label_tickets">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>70</x>
@@ -58,6 +61,9 @@
    </property>
   </widget>
   <widget class="QWidget" name="ticket_1" native="true">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -100,6 +106,9 @@
    </layout>
   </widget>
   <widget class="QWidget" name="ticket_2" native="true">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -142,6 +151,9 @@
    </layout>
   </widget>
   <widget class="QWidget" name="ticket_3" native="true">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -184,6 +196,9 @@
    </layout>
   </widget>
   <widget class="QWidget" name="ticket_4" native="true">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -226,11 +241,14 @@
    </layout>
   </widget>
   <widget class="QTextEdit" name="textEdit_potid">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>170</x>
      <y>150</y>
-     <width>371</width>
+     <width>151</width>
      <height>31</height>
     </rect>
    </property>
@@ -248,6 +266,9 @@
    </property>
   </widget>
   <widget class="QLabel" name="label_potid">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>70</x>
@@ -331,7 +352,7 @@
     <rect>
      <x>170</x>
      <y>50</y>
-     <width>371</width>
+     <width>151</width>
      <height>31</height>
     </rect>
    </property>
@@ -362,6 +383,9 @@
    </property>
   </widget>
   <widget class="QLabel" name="label_bgi">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>70</x>
@@ -384,11 +408,64 @@
    </property>
   </widget>
   <widget class="QTextEdit" name="textEdit_bgi">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>170</x>
      <y>190</y>
-     <width>371</width>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>宋体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="documentTitle">
+    <string/>
+   </property>
+   <property name="placeholderText">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_bgm">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>50</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>宋体</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>背景音乐</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="textEdit_bgm">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>90</y>
+     <width>151</width>
      <height>31</height>
     </rect>
    </property>

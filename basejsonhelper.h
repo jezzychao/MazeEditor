@@ -69,6 +69,8 @@ struct MazeData{
     int potId = 0;
     ///背景图片
     QString bgi;
+    ///背景音乐
+    QString bgm;
     /// 没有使用
     int beginStageId = 0;
     /// 没有使用

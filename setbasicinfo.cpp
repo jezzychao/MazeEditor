@@ -38,7 +38,7 @@ SetBasicInfo::~SetBasicInfo()
 void SetBasicInfo::initForNew()
 {
     QVector<Item> items;
-    loadItems(items);
+//    loadItems(items);
     QStringList qsl({"none"});
     for(auto it = items.cbegin();it != items.cend();++it){
         QString s;
@@ -62,12 +62,13 @@ void SetBasicInfo::initForNew()
     ui->textEdit_name->setText("");
     ui->textEdit_potid->setText("");
     ui->textEdit_bgi->setText("");
+    ui->textEdit_bgm->setText("");
 }
 
 void SetBasicInfo::initForSet()
 {
     QVector<Item> items;
-    loadItems(items);
+//    loadItems(items);
     auto funcGetIdx = [&items](int itemId){
         int idx = -1;
         for(const auto &val: items){
@@ -110,6 +111,7 @@ void SetBasicInfo::initForSet()
     ui->textEdit_name->setText(mazeData.name);
     ui->textEdit_potid->setText(QString::number(mazeData.potId));
     ui->textEdit_bgi->setText((mazeData.bgi));
+     ui->textEdit_bgm->setText((mazeData.bgm));
 }
 
 void SetBasicInfo::acceptNotify(const std::string &key, const BaseMsg &msg)
@@ -140,18 +142,24 @@ void SetBasicInfo::on_btn_ok_clicked()
         //名字是空
         tips.append("输入的迷宫名称是空的\n");
     }
-    auto qsPotId = ui->textEdit_potid->toPlainText();
-    if (qsPotId.isEmpty())
-    {
-        //potid是空
-        tips.append("输入的迷宫所在potId是空的");
-    }
+//    auto qsPotId = ui->textEdit_potid->toPlainText();
+//    if (qsPotId.isEmpty())
+//    {
+//        //potid是空
+//        tips.append("输入的迷宫所在potId是空的");
+//    }
 
-    auto qsBgi = ui->textEdit_bgi->toPlainText();
-    if (qsBgi.isEmpty())
-    {
-        tips.append("输入的背景是空的");
-    }
+//    auto qsBgi = ui->textEdit_bgi->toPlainText();
+//    if (qsBgi.isEmpty())
+//    {
+//        tips.append("输入的背景图片是空的");
+//    }
+
+//    auto qsBgm = ui->textEdit_bgm->toPlainText();
+//    if (qsBgm.isEmpty())
+//    {
+//        tips.append("输入的背景音乐是空的");
+//    }
 
     //打开提示界面
     auto pf = [](const QString &qs){
@@ -189,10 +197,11 @@ void SetBasicInfo::on_btn_ok_clicked()
         originalId = maze.id;
     }
     maze.id = qsId.toInt();
-    maze.potId = qsPotId.toInt();
+//    maze.potId = qsPotId.toInt();
     maze.name = qsName;
     maze.tickets = tepTickets;
-    maze.bgi = qsBgi;
+//    maze.bgi = qsBgi;
+//    maze.bgm = qsBgm;
     if(isCreateNew){
         auto result = MazeHelper::getInstance()->checkIsValid(maze);
         if(!std::get<0>(result)){
